@@ -1,4 +1,9 @@
 <p align="center">
+  <strong><a href="README.md">English</a></strong> ·
+  <a href="README.es.md">Español</a>
+</p>
+
+<p align="center">
   <img src="docs/img/portada-miauki.png" alt="Miauki YT" width="100%">
 </p>
 
