@@ -7,6 +7,7 @@
 | Versión | Descarga | SHA-256 |
 |---|---|---|
 | **v1.0.0** | [Miauki.YT.v1.0.0.exe](https://github.com/MakiEzequiel/miauki-yt/releases/download/v1.0.0/Miauki.YT.v1.0.0.exe) | `2f976c8aa1c80d9677348d157734908eb9dbc034e0fcc84449d1d621c3bc9503` |
+| **v1.0.0 (ZIP completo)** | [Miauki.YT.v1.0.0.-.Windows.zip](https://github.com/MakiEzequiel/miauki-yt/releases/download/v1.0.0/Miauki.YT.v1.0.0.-.Windows.zip) | `c47465d28c81f317a14e9f32db66e7106db88a981a3ddab9fe23d074240dd818` |
 
 > Windows SmartScreen puede avisar al abrir el .exe por primera vez: es normal en programas sin certificado de firma. Elegí "Más información → Ejecutar de todas formas".
 
