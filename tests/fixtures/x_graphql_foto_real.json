@@ -1,0 +1,30 @@
+{
+ "data": {
+  "tweetResult": {
+   "result": {
+    "__typename": "Tweet",
+    "legacy": {
+     "full_text": "Foto de prueba (texto quitado)",
+     "extended_entities": {
+      "media": [
+       {
+        "type": "photo",
+        "media_url_https": "https://pbs.twimg.com/media/HUjf8tjXQAEOlBY.jpg"
+       }
+      ]
+     }
+    },
+    "core": {
+     "user_results": {
+      "result": {
+       "legacy": {
+        "name": "Cuenta de prueba",
+        "screen_name": "cuenta_prueba"
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,4 @@
+# Dependencias con versiones fijadas (instaladas y probadas el 12/10/2026).
+pywebview==6.2.1
+yt-dlp==2026.8.19
+pyinstaller==6.22.3

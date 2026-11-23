@@ -1,0 +1,55 @@
+# Assets permitidos en el .exe — única lista blanca (cierre de Fase 1, punto 2).
+# Una ruta por línea, relativa a la raíz del proyecto, con / . El build (tools/build_exe.py)
+# empaqueta SOLO estos assets además de la estructura (index.html, css/, js/).
+# Ícono prohibido y su razón: docs/DECISIONES.md (lista negra).
+miauki/ui/assets/fonts/Caveat-Medium.ttf
+miauki/ui/assets/fonts/Caveat-Regular.ttf
+miauki/ui/assets/fonts/Caveat-SemiBold.ttf
+miauki/ui/assets/fonts/Fredoka-Medium.ttf
+miauki/ui/assets/fonts/Fredoka-Regular.ttf
+miauki/ui/assets/fonts/Fredoka-SemiBold.ttf
+miauki/ui/assets/img/fondo_nebulosa.png
+miauki/ui/assets/img/Icos/Miauki ico.ico
+miauki/ui/assets/img/Icos/Miauki.png
+miauki/ui/assets/img/Icos/Botón neón MIAUK! con huella.png
+miauki/ui/assets/img/Icos/Banner neón de Miauki este OK 2.png
+miauki/ui/assets/img/Icos/Banner neón de Miauki este OK 2 recortado.png
+miauki/ui/assets/img/Icos/Gatita miauki1.png
+miauki/ui/assets/img/Icos/Gatita miauki2.png
+miauki/ui/assets/img/Icos/Gatita miauki3.png
+miauki/ui/assets/img/Icos/Gatito boton rapido Miauk1.png
+miauki/ui/assets/img/Icos/Gatito boton rapido Miauk2.png
+miauki/ui/assets/icons/home.svg
+miauki/ui/assets/icons/cola.svg
+miauki/ui/assets/icons/historial.svg
+miauki/ui/assets/icons/ajustes.svg
+miauki/ui/assets/icons/info.svg
+miauki/ui/assets/icons/link.svg
+miauki/ui/assets/icons/limpiar.svg
+miauki/ui/assets/icons/pegar.svg
+miauki/ui/assets/icons/formato.svg
+miauki/ui/assets/icons/tamanio.svg
+miauki/ui/assets/icons/tiempo.svg
+miauki/ui/assets/icons/peso.svg
+miauki/ui/assets/icons/youtube.svg
+miauki/ui/assets/icons/tiktok.svg
+miauki/ui/assets/icons/instagram.svg
+miauki/ui/assets/icons/facebook.svg
+miauki/ui/assets/icons/x.svg
+miauki/ui/assets/icons/onda.svg
+miauki/ui/assets/icons/subs.svg
+miauki/ui/assets/icons/globo.svg
+miauki/ui/assets/icons/corazon.svg
+miauki/ui/assets/icons/huella.svg
+miauki/ui/assets/icons/carpeta.svg
+miauki/ui/assets/icons/pausar.svg
+miauki/ui/assets/icons/reanudar.svg
+miauki/ui/assets/icons/reintentar.svg
+miauki/ui/assets/icons/abrir.svg
+miauki/ui/assets/icons/borrar.svg
+miauki/ui/assets/icons/video.svg
+miauki/ui/assets/icons/musica.svg
+miauki/ui/assets/icons/imagen.svg
+miauki/ui/assets/icons/descarga.svg
+miauki/ui/assets/icons/listo.svg
+miauki/ui/assets/icons/alerta.svg

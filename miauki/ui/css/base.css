@@ -1,0 +1,126 @@
+/* ============================================================
+   BASE — reset mínimo, fuentes locales y fondo continuo.
+   Una sola imagen de fondo (fondo_nebulosa.png) para toda la
+   app: cover, fija y centrada. Sin destellos ni adornos extra.
+   ============================================================ */
+
+/* ---------- FUENTES LOCALES (sin CDN, todo offline) ---------- */
+@font-face {
+  font-family: "Fredoka";
+  src: url("../assets/fonts/Fredoka-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fredoka";
+  src: url("../assets/fonts/Fredoka-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fredoka";
+  src: url("../assets/fonts/Fredoka-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Caveat";
+  src: url("../assets/fonts/Caveat-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Caveat";
+  src: url("../assets/fonts/Caveat-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Caveat";
+  src: url("../assets/fonts/Caveat-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-display: swap;
+}
+
+/* ---------- RESET MÍNIMO ---------- */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--fuente-interfaz);
+  font-size: var(--texto-md);
+  color: var(--texto-principal);
+  /* Color de fondo de página = fondo base: evita el destello blanco al abrir */
+  background-color: var(--fondo-base);
+  background-image: url("../assets/img/fondo_nebulosa.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  overflow: hidden; /* el scroll lo maneja solo la columna central */
+}
+
+/* Tamaño de fuente (plan 19/11/2026): el tamaño que antes era "Un poco más
+   grande" (+10%) ahora es el PREDETERMINADO del programa (html al 110%). La
+   opción "Un poco más grande" pasa a ser un 10% por encima de ese nuevo
+   tamaño (121%). Todo está en rem, así que crece solo desde la raíz. */
+html {
+  font-size: 110%;
+}
+
+html.font-grande {
+  font-size: 121%;
+}
+
+/* Velo oscuro suave para legibilidad del texto sobre la nebulosa */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: var(--velo-oscuro);
+  z-index: var(--z-fondo);
+  pointer-events: none;
+}
+
+/* ---------- VIDRIO (zonas de la app) ---------- */
+.vidrio {
+  background: var(--superficie-vidrio);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-tarjeta);
+  backdrop-filter: var(--desenfoque-vidrio);
+  -webkit-backdrop-filter: var(--desenfoque-vidrio);
+  box-shadow: var(--brillo-borde);
+}
+
+/* ---------- MOVIMIENTO REDUCIDO ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Modo de efectos reducidos: clase en la raíz (.app.reducir-efectos) */
+.reducir-efectos .vidrio {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+.reducir-efectos .sk {
+  animation: none; /* el skeleton estático ya comunica la carga */
+}
+.reducir-efectos .barra-inferior {
+  transition: none; /* la barra aparece y desaparece sin slide */
+}

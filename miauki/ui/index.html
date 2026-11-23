@@ -1,0 +1,552 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; script-src 'self'">
+  <title>Miauki YT</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+  <div class="app sin-inferior" id="app">
+    <aside class="vidrio barra-lateral" data-str-aria="barra.lateral" aria-label="Barra lateral">
+      <nav class="nav-lateral" data-str-aria="barra.secciones" aria-label="Secciones de la app">
+        <ul class="nav-lista">
+          <li>
+            <button type="button" class="nav-item" data-pantalla="inicio" data-str-title="pantalla.inicio" title="Inicio" aria-current="page">
+              <svg class="nav-ico" aria-hidden="true"><use href="assets/icons/home.svg#ico-home"></use></svg>
+              <span class="nav-texto" data-str="pantalla.inicio"></span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="nav-item" data-pantalla="cola" data-str-title="pantalla.cola" title="Cola de Descargas">
+              <svg class="nav-ico" aria-hidden="true"><use href="assets/icons/cola.svg#ico-cola"></use></svg>
+              <span class="nav-texto" data-str="pantalla.cola"></span>
+              <span class="nav-insignia" data-cola-contador hidden></span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="nav-item" data-pantalla="historial" data-str-title="pantalla.historial" title="Historial">
+              <svg class="nav-ico" aria-hidden="true"><use href="assets/icons/historial.svg#ico-historial"></use></svg>
+              <span class="nav-texto" data-str="pantalla.historial"></span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="nav-item" data-pantalla="ajustes" data-str-title="pantalla.ajustes" title="Ajustes">
+              <svg class="nav-ico" aria-hidden="true"><use href="assets/icons/ajustes.svg#ico-ajustes"></use></svg>
+              <span class="nav-texto" data-str="pantalla.ajustes"></span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="nav-item" data-pantalla="acerca" data-str-title="pantalla.acerca" title="Acerca de...">
+              <svg class="nav-ico" aria-hidden="true"><use href="assets/icons/info.svg#ico-info"></use></svg>
+              <span class="nav-texto" data-str="pantalla.acerca"></span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+      <div class="lateral-pie">
+        <img class="pie-gatito" src="assets/img/Icos/Miauki.png" alt="">
+        <p class="pie-lema" data-str="pie.lema">Las mejores descargas, siempre ♥</p>
+        <button type="button" class="pie-apoyar" data-apoyar data-str="apoyar.boton"></button>
+      </div>
+    </aside>
+
+    <header class="encabezado">
+      <img class="banner"
+           src="assets/img/Icos/Banner neón de Miauki este OK 2 recortado.png"
+           data-str-alt="encabezado.bannerAlt"
+           alt="Miauki — Pegá, hacé Miauki, y listo disfrutá. Descargador de videos y audio de más de 1800 sitios."
+           width="1538" height="300">
+    </header>
+
+    <main class="central" data-str-aria="central.aria" aria-label="Contenido central">
+      <h1 class="sr-solo" id="t-pantalla-inicio" tabindex="-1" data-pantalla="inicio" data-str="pantalla.inicio"></h1>
+      <section class="vidrio tarjeta" data-pantalla="inicio" aria-labelledby="t-paso1">
+        <header class="tarjeta-cab">
+          <span class="paso-num" aria-hidden="true"><span>1</span></span>
+          <div>
+            <h2 class="paso-titulo" id="t-paso1" data-str="paso1.titulo"></h2>
+            <p class="paso-sub" data-str="paso1.sub"></p>
+          </div>
+        </header>
+        <div class="fila-link">
+          <div class="campo">
+            <svg class="campo-ico" aria-hidden="true"><use href="assets/icons/link.svg#ico-link"></use></svg>
+            <input class="campo-input" id="campo-link" type="url" inputmode="url"
+                   autocomplete="off" spellcheck="false"
+                   data-str-ph="paso1.placeholder" data-str-aria="paso1.aria">
+            <button type="button" class="campo-pegar" data-str-aria="paso1.pegar">
+              <svg aria-hidden="true"><use href="assets/icons/pegar.svg#ico-pegar"></use></svg>
+            </button>
+            <button type="button" class="campo-x" data-str-aria="paso1.borrar" data-limpiar hidden>
+              <svg aria-hidden="true"><use href="assets/icons/limpiar.svg#ico-limpiar"></use></svg>
+            </button>
+          </div>
+          <button type="button" class="btn-analizar" data-str="paso1.analizar"></button>
+          <button type="button" class="btn-miauk" data-miauk disabled aria-describedby="paso1-ayuda">
+            <img src="assets/img/Icos/Gatito boton rapido Miauk2.png"
+                 alt="MIAUK" width="1774" height="887">
+          </button>
+        </div>
+        <div class="aviso-cola" data-aviso-cola hidden>
+          <span class="aviso-cola-ico" aria-hidden="true">
+            <svg><use href="assets/icons/cola.svg#ico-cola"></use></svg>
+          </span>
+          <span class="aviso-cola-texto" role="status" data-aviso-texto></span>
+          <button type="button" class="aviso-cola-ver" data-ver-cola data-str="cola.ver"></button>
+        </div>
+        <p class="paso1-error" id="paso1-error" role="alert" hidden></p>
+        <button type="button" class="error-accion" data-error-motor data-str="motor.actualizar"
+                hidden></button>
+        <button type="button" class="error-accion" data-error-ajustes data-str="errores.irAjustes"
+                hidden></button>
+        <p class="ayuda-tenue" id="paso1-ayuda" data-str="paso1.ayuda"></p>
+      </section>
+      <section class="vidrio tarjeta" data-pantalla="inicio" aria-labelledby="t-paso2">
+        <header class="tarjeta-cab">
+          <span class="paso-num" aria-hidden="true"><span>2</span></span>
+          <div>
+            <h2 class="paso-titulo" id="t-paso2" data-str="paso2.titulo"></h2>
+            <p class="paso-sub" data-str="paso2.sub"></p>
+          </div>
+        </header>
+        <div class="video-zona" data-estado-video="vacio">
+          <p class="video-vacio">
+            <svg class="video-vacio-ico" aria-hidden="true"><use href="assets/icons/video.svg#ico-video"></use></svg>
+            <span data-str="paso2.vacio"></span>
+          </p>
+          <div class="video-fila video-skeleton" aria-hidden="true">
+            <span class="sk sk-mini"></span>
+            <span class="sk-lineas">
+              <span class="sk sk-largo"></span>
+              <span class="sk sk-corto"></span>
+            </span>
+          </div>
+          <article class="video-fila video-listo">
+            <img class="video-mini" src="assets/img/Icos/Miauki.png" alt="" width="512" height="512">
+            <div class="video-info">
+              <p class="video-titulo"></p>
+              <p class="video-meta">
+                <span></span>
+                <span aria-hidden="true">·</span>
+                <span></span>
+              </p>
+            </div>
+            <div class="img-cuadricula" data-img-cuadricula hidden></div>
+            <p class="img-cantidad" data-img-cantidad hidden></p>
+            <button type="button" class="preview-cerrar" data-cerrar-preview data-str-aria="col.cerrarVista" aria-label="Cerrar vista">
+              <svg aria-hidden="true"><use href="assets/icons/limpiar.svg#ico-limpiar"></use></svg>
+            </button>
+          </article>
+        </div>
+      </section>
+      <section class="vidrio tarjeta" data-pantalla="inicio" aria-labelledby="t-paso3">
+        <div class="paso3-top">
+          <header class="tarjeta-cab">
+            <span class="paso-num" aria-hidden="true"><span>3</span></span>
+            <div>
+              <h2 class="paso-titulo" id="t-paso3" data-str="paso3.titulo"></h2>
+              <p class="paso-sub" data-str="paso3.sub"></p>
+            </div>
+          </header>
+          <div class="panel-datos">
+            <p class="panel-dato">
+              <svg aria-hidden="true"><use href="assets/icons/formato.svg#ico-formato"></use></svg>
+              <span data-str="paso3.datoFormato"></span>
+            </p>
+            <p class="panel-dato">
+              <svg aria-hidden="true"><use href="assets/icons/tamanio.svg#ico-tamanio"></use></svg>
+              <span data-str="paso3.datoTamano"></span>
+            </p>
+            <p class="panel-dato">
+              <svg aria-hidden="true"><use href="assets/icons/tiempo.svg#ico-tiempo"></use></svg>
+              <span data-str="paso3.datoTiempo"></span>
+            </p>
+          </div>
+        </div>
+        <div class="paso3-fila">
+          <div class="segmentado" role="radiogroup" data-str-aria="paso3.grupoFormato">
+            <button type="button" role="radio" aria-checked="true" data-tipo="video" data-str="paso3.video"></button>
+            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-tipo="musica" data-str="paso3.musica"></button>
+            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-tipo="imagen" data-str="paso3.imagen"></button>
+          </div>
+          <div class="segmentado" role="radiogroup" data-str-aria="paso3.grupoCalidad">
+            <button type="button" role="radio" aria-checked="true" data-str="paso3.mejor"></button>
+            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-str="paso3.equilibrada"></button>
+            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-str="paso3.liviana"></button>
+          </div>
+          <button type="button" class="btn-mas" aria-expanded="false" aria-controls="mas-opciones"
+                  data-str="paso3.masOpciones"></button>
+        </div>
+        <p class="tipo-nota" data-tipo-nota data-str="paso3.soloImagen" hidden></p>
+        <div class="mas-opciones" id="mas-opciones" hidden>
+          <div class="segmentado" role="radiogroup" data-str-aria="paso3.grupoResolucion">
+            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-str="paso3.r480"></button>
+            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-str="paso3.r720"></button>
+            <button type="button" role="radio" aria-checked="true" data-str="paso3.r1080"></button>
+            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-str="paso3.r1440"></button>
+            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-str="paso3.r2160"></button>
+            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-str="paso3.r4320"></button>
+            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-str="paso3.r320"></button>
+            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-str="paso3.r256"></button>
+            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-str="paso3.r128"></button>
+          </div>
+        </div>
+        <p class="aviso-formato" data-aviso-formato data-str="paso3.avisoFormato" hidden></p>
+      </section>
+
+      <section class="vidrio pantalla-playlist" data-pantalla="playlist" aria-labelledby="t-pantalla-playlist" hidden>
+        <header class="pl-cab">
+          <h1 class="pantalla-titulo" id="t-pantalla-playlist" tabindex="-1" data-str="pantalla.playlist"></h1>
+          <span class="pl-conteo" data-pl-conteo aria-live="polite"></span>
+        </header>
+        <p class="pl-titulo" data-pl-titulo></p>
+        <div class="pl-acciones">
+          <label class="pl-todo">
+            <input type="checkbox" data-pl-todos checked
+                   data-str-aria="playlist.seleccionarTodo" aria-label="Seleccionar todo">
+            <span data-str="playlist.seleccionarTodo"></span>
+          </label>
+          <select class="ajuste-select" data-pl-calidad data-str-aria="playlist.grupoCalidad">
+            <option value="mejor" data-str="playlist.calidadMejor"></option>
+            <option value="1080" data-str="playlist.calidad1080"></option>
+            <option value="720" data-str="playlist.calidad720"></option>
+            <option value="480" data-str="playlist.calidad480"></option>
+            <option value="musica" data-str="playlist.calidadMusica"></option>
+          </select>
+          <button type="button" class="btn-miauk pl-miauk" data-pl-miauk disabled>
+            <img src="assets/img/Icos/Botón neón MIAUK! con huella.png"
+                 alt="MIAUK" width="1774" height="887">
+          </button>
+        </div>
+        <p class="pl-salteados" data-pl-salteados role="status" hidden></p>
+        <ul class="pl-lista" data-pl-lista></ul>
+      </section>
+
+      <section class="vidrio pantalla-cola" data-pantalla="cola" aria-labelledby="t-pantalla-cola" hidden>
+        <header class="cola-cab">
+          <h1 class="pantalla-titulo" id="t-pantalla-cola" tabindex="-1" data-str="pantalla.cola"></h1>
+          <div class="cola-globales">
+            <button type="button" class="col-boton" data-cola-pausar-todo data-str="cola.pausarTodo" data-tooltip hidden></button>
+            <button type="button" class="col-boton" data-cola-reanudar-todo data-str="cola.reanudarTodo" data-tooltip hidden></button>
+            <button type="button" class="col-boton" data-cola-cancelar-todo data-str="cola.cancelarTodo" data-tooltip hidden></button>
+            <button type="button" class="col-boton cola-tacho" data-cola-limpiar-historial data-str-aria="cola.tacho" aria-label="Borrar historial" data-tooltip hidden>
+              <svg aria-hidden="true"><use href="assets/icons/borrar.svg#ico-borrar"></use></svg>
+            </button>
+          </div>
+          <span class="cola-conteo" data-cola-conteo aria-live="polite"></span>
+          <button type="button" class="cola-limpiar col-boton" data-cola-limpiar data-str="cola.limpiar" hidden></button>
+        </header>
+        <ul class="cola-lista" data-cola-lista></ul>
+        <p class="cola-resumen" data-cola-resumen aria-live="polite" hidden></p>
+        <div class="cola-vacia" data-cola-vacia>
+          <img class="cola-vacia-ico" src="assets/img/Icos/Miauki.png" alt="" aria-hidden="true">
+          <p data-str="cola.vacia"></p>
+        </div>
+      </section>
+      <section class="vidrio pantalla-historial" data-pantalla="historial" aria-labelledby="t-pantalla-historial" hidden>
+        <header class="hist-cab">
+          <h1 class="pantalla-titulo" id="t-pantalla-historial" tabindex="-1" data-str="pantalla.historial"></h1>
+          <span class="hist-conteo" data-hist-conteo aria-live="polite"></span>
+          <button type="button" class="col-boton" data-hist-borrar data-str="historial.borrar" hidden></button>
+          <span class="hist-confirmar" data-hist-confirmar hidden>
+            <span role="status" data-str="historial.confirmar"></span>
+            <button type="button" class="col-boton" data-hist-si data-str="historial.confirmarSi"></button>
+            <button type="button" class="col-boton" data-hist-no data-str="historial.confirmarNo"></button>
+          </span>
+        </header>
+        <p class="hist-nota" data-str="historial.nota"></p>
+        <ul class="hist-lista" data-hist-lista></ul>
+        <div class="hist-vacia" data-hist-vacia hidden>
+          <img class="hist-vacia-ico" src="assets/img/Icos/Miauki.png" alt="" aria-hidden="true">
+          <p data-str="historial.vacio"></p>
+          <button type="button" class="col-boton" data-hist-inicio data-str="historial.aInicio"></button>
+        </div>
+      </section>
+      <section class="vidrio pantalla-ajustes" data-pantalla="ajustes" aria-labelledby="t-pantalla-ajustes" hidden>
+        <h1 class="pantalla-titulo" id="t-pantalla-ajustes" tabindex="-1" data-str="pantalla.ajustes"></h1>
+        <div class="ajustes-grilla">
+          <div class="ajuste">
+            <h2 class="ajuste-titulo" data-str="ajustes.carpetaTitulo"></h2>
+            <p class="ajuste-ruta" data-ajuste-ruta></p>
+            <button type="button" class="col-boton" data-ajuste-carpeta data-str="ajustes.carpetaBoton"></button>
+          </div>
+          <div class="ajuste">
+            <label class="ajuste-titulo" for="ajuste-idioma-subs" data-str="ajustes.idiomaSubs"></label>
+            <select class="ajuste-select" id="ajuste-idioma-subs" data-ajuste="idioma_subs" data-str-aria="ajustes.idiomaSubs">
+              <option value="es" data-str="ajustes.subsEs"></option>
+              <option value="en" data-str="ajustes.subsEn"></option>
+            </select>
+            <label class="col-switch ajuste-switch">
+              <input type="checkbox" data-ajuste="incluir_subs" data-str-aria="col.incluirSubs">
+              <span class="col-pista" aria-hidden="true"><span class="col-pulgar"></span></span>
+              <span data-str="col.incluirSubs"></span>
+            </label>
+          </div>
+          <div class="ajuste">
+            <label class="ajuste-titulo" for="ajuste-tamano" data-str="ajustes.tamano"></label>
+            <select class="ajuste-select" id="ajuste-tamano" data-ajuste="tamano_fuente" data-str-aria="ajustes.tamano">
+              <option value="normal" data-str="ajustes.tamanoNormal"></option>
+              <option value="grande" data-str="ajustes.tamanoGrande"></option>
+            </select>
+          </div>
+          <div class="ajuste">
+            <label class="ajuste-titulo" for="ajuste-idioma" data-str="ajustes.idioma"></label>
+            <select class="ajuste-select" id="ajuste-idioma" data-ajuste="idioma_interfaz" data-str-aria="ajustes.idioma">
+              <option value="es" data-str="ajustes.idiomaEs"></option>
+              <option value="en" data-str="ajustes.idiomaEn"></option>
+            </select>
+          </div>
+          <div class="ajuste">
+            <label class="ajuste-titulo" for="ajuste-cookies" data-str="ajustes.cookies"></label>
+            <select class="ajuste-select" id="ajuste-cookies" data-ajuste="navegador_cookies" data-str-aria="ajustes.cookies">
+              <option value="ninguno" data-str="ajustes.ninguno"></option>
+              <option value="edge">Edge</option>
+              <option value="chrome">Chrome</option>
+              <option value="brave">Brave</option>
+              <option value="chromium">Chromium</option>
+              <option value="opera">Opera</option>
+              <option value="vivaldi">Vivaldi</option>
+              <option value="firefox">Firefox</option>
+            </select>
+            <p class="ajuste-nota" data-str="ajustes.cookiesNota"></p>
+            <p class="ajuste-ruta ajuste-archivo" data-cookies-archivo></p>
+            <div class="ajuste-botones">
+              <button type="button" class="col-boton" data-cookies-elegir
+                      data-str="ajustes.cookiesElegir"></button>
+              <button type="button" class="col-boton" data-cookies-quitar
+                      data-str="ajustes.cookiesQuitar" hidden></button>
+            </div>
+            <p class="ajuste-nota ajuste-privacidad" data-str="ajustes.cookiesPrivacidad"></p>
+            <p class="ajuste-nota" data-str="ajustes.cookiesAyuda"></p>
+            <details class="ajuste-desplegable">
+              <summary class="ajuste-nota" data-str="ajustes.cookiesAyudaTitulo">Como subir tus cookies (ejemplo rapido)</summary>
+              <p class="ajuste-nota" data-str="ajustes.cookiesAyudaPaso1">Entra a esos sitios en Chrome y quedate con tu sesion iniciada.</p>
+              <p class="ajuste-nota" data-str="ajustes.cookiesAyudaPaso2">Instala una extension que exporte cookies: «Get cookies.txt» sirve.</p>
+              <p class="ajuste-nota" data-str="ajustes.cookiesAyudaPaso3">Exporta el archivo (se descarga como cookies.txt).</p>
+              <p class="ajuste-nota" data-str="ajustes.cookiesAyudaPaso4">Clickea «Elegir archivo…» y seleccionalo para agregar tus cookies.</p>
+              <p class="ajuste-nota" data-str="ajustes.cookiesAyudaPaso5">Listo: ¡Ahora si esos sitios van a poder descargar de tus paginas!</p>
+              <p class="ajuste-ruta" data-str="ajustes.cookiesAyudaChrome"></p>
+              <p class="ajuste-nota" data-str="ajustes.cookiesAyudaChromeNota"></p>
+            </details>
+          </div>
+          <div class="ajuste">
+            <label class="col-switch ajuste-switch">
+              <input type="checkbox" data-ajuste="fxtwitter" data-str-aria="ajustes.fxtwitter">
+              <span class="col-pista" aria-hidden="true"><span class="col-pulgar"></span></span>
+              <span data-str="ajustes.fxtwitter"></span>
+            </label>
+            <p class="ajuste-nota" data-str="ajustes.fxtwitterNota"></p>
+          </div>
+          <div class="ajuste">
+            <label class="col-switch ajuste-switch">
+              <input type="checkbox" data-ajuste="guardar_historial" data-str-aria="ajustes.historial">
+              <span class="col-pista" aria-hidden="true"><span class="col-pulgar"></span></span>
+              <span data-str="ajustes.historial"></span>
+            </label>
+            <p class="ajuste-nota" data-str="ajustes.historialNota"></p>
+          </div>
+          <div class="ajuste">
+            <label class="col-switch ajuste-switch">
+              <input type="checkbox" data-ajuste="maxima_compatibilidad"
+                     data-str-aria="ajustes.compatibilidad">
+              <span class="col-pista" aria-hidden="true"><span class="col-pulgar"></span></span>
+              <span data-str="ajustes.compatibilidad"></span>
+            </label>
+            <p class="ajuste-nota" data-str="ajustes.compatibilidadNota"></p>
+          </div>
+          <div class="ajuste ajuste-privacidad">
+            <h2 class="ajuste-titulo" data-str="ajustes.privacidadTitulo"></h2>
+            <p class="ajuste-nota" data-str="ajustes.privacidadTexto"></p>
+            <p class="ajuste-nota" data-str="ajustes.privacidadTexto2"></p>
+          </div>
+          <div class="ajuste ajuste-motor">
+            <h2 class="ajuste-titulo" id="t-motor" data-str="motor.titulo"></h2>
+            <p class="motor-dato">
+              <span class="motor-origen" data-motor-origen data-str="motor.versionIncluida"></span>
+              <strong data-motor-version aria-labelledby="t-motor"></strong>
+            </p>
+            <p class="motor-dato motor-ultima">
+              <span data-str="motor.comprobado"></span>
+              <span data-motor-ultima></span>
+            </p>
+            <label class="col-switch ajuste-switch">
+              <input type="checkbox" data-ajuste="actualizar_motor_auto" data-str-aria="motor.auto">
+              <span class="col-pista" aria-hidden="true"><span class="col-pulgar"></span></span>
+              <span data-str="motor.auto"></span>
+            </label>
+            <p class="ajuste-nota" data-str="motor.autoNota"></p>
+            <button type="button" class="motor-boton" data-motor-buscar data-str="motor.buscar"></button>
+            <p class="motor-estado" data-motor-estado role="status" aria-live="polite"></p>
+          </div>
+          <div class="ajuste ajuste-app">
+            <h2 class="ajuste-titulo" data-str="app.update.titulo"></h2>
+            <p class="ajuste-nota" data-str="app.update.nota"></p>
+            <button type="button" class="motor-boton" data-app-buscar data-str="app.update.buscar"></button>
+            <p class="motor-estado" data-app-estado role="status" aria-live="polite"></p>
+          </div>
+        </div>
+        <p class="ajuste-estado" data-ajuste-estado role="status" aria-live="polite"></p>
+      </section>
+      <section class="vidrio pantalla-acerca" data-pantalla="acerca" aria-labelledby="t-pantalla-acerca" hidden>
+        <h1 class="pantalla-titulo" id="t-pantalla-acerca" tabindex="-1" data-str="pantalla.acerca"></h1>
+        <div class="acerca">
+          <img class="acerca-ico" src="assets/img/Icos/Miauki.png" alt="" aria-hidden="true" width="512" height="512">
+          <p class="acerca-nombre"><span class="acerca-nombre-estilizado"
+                  data-acerca-nombre>Miauki YT</span>
+            <span class="acerca-version" data-acerca-version></span></p>
+          <p class="acerca-desc" data-acerca-descripcion></p>
+          <p class="acerca-lema" data-str="col.fraseEntrada"></p>
+          <p class="acerca-gracias" data-acerca-gracias></p>
+          <div class="acerca-apoyo" data-acerca-apoyo>
+            <p class="acerca-apoyo-texto" data-str="apoyar.texto"></p>
+            <div class="acerca-apoyo-acciones">
+              <button type="button" class="col-boton" data-apoyar-paypal data-str="apoyar.paypal"></button>
+              <button type="button" class="col-boton" data-apoyar-copiar data-str="apoyar.copiar"></button>
+              <button type="button" class="col-boton" data-apoyar-usdt data-str="apoyar.usdt"></button>
+            </div>
+            <p class="acerca-apoyo-alias">
+              <span data-str="apoyar.transferencia"></span>
+              <span class="acerca-apoyo-dato" data-apoyar-alias></span>
+            </p>
+            <p class="acerca-apoyo-alias">
+              <span data-str="apoyar.usdtRed"></span>
+              <span class="acerca-apoyo-dato" data-apoyar-usdt-dato></span>
+            </p>
+            <p class="acerca-estado" data-apoyar-estado role="status" aria-live="polite"></p>
+          </div>
+          <div class="acerca-acciones">
+            <button type="button" class="col-boton acerca-recorrido" data-acerca-recorrido data-str="acerca.recorrido"></button>
+            <button type="button" class="col-boton acerca-instagram" data-acerca-instagram
+                    data-str-aria="acerca.instagramAria">
+              <svg class="acerca-ico-red" aria-hidden="true"><use href="assets/icons/instagram.svg#ico-instagram"></use></svg>
+              <span data-str="acerca.instagram"></span>
+            </button>
+            <button type="button" class="col-boton acerca-facebook" data-acerca-facebook
+                    data-str-aria="acerca.facebookAria">
+              <span data-str="acerca.facebook"></span>
+              <svg class="acerca-ico-red" aria-hidden="true"><use href="assets/icons/facebook.svg#ico-facebook"></use></svg>
+            </button>
+            <button type="button" class="col-boton" data-acerca-registros data-str="acerca.registros"></button>
+          </div>
+          <p class="acerca-estado" data-acerca-estado role="status" aria-live="polite"></p>
+          <details class="acerca-detalles" data-acerca-detalles>
+            <summary data-str="acerca.detalles"></summary>
+            <ul class="acerca-lista" data-acerca-lista></ul>
+            <p class="acerca-dato"><span data-str="acerca.licencia"></span> <span data-acerca-licencia></span></p>
+            <button type="button" class="acerca-enlace" data-acerca-licencias data-str="acerca.licencias"></button>
+          </details>
+          <p class="acerca-privacidad">
+            <span class="acerca-privacidad-neon" data-str="acerca.privacidadTitulo"></span>
+            <span data-str="acerca.privacidad"></span>
+          </p>
+          <p class="acerca-legal" data-acerca-legal></p>
+        </div>
+      </section>
+    </main>
+
+    <aside class="vidrio columna-derecha" data-str-aria="col.ariaColumna" aria-label="Guardar en y subtítulos">
+      <p class="col-frase col-frase-entrada">
+        <span data-str="col.fraseEntrada"></span>
+        <svg class="col-adj" aria-hidden="true"><use href="assets/icons/huella.svg#ico-huella"></use></svg>
+      </p>
+      <div class="col-panel">
+        <p class="col-rotulo" data-str="col.guardarEn"></p>
+        <div class="col-ruta" data-tooltip tabindex="0">
+          <span class="col-caja"><svg aria-hidden="true"><use href="assets/icons/carpeta.svg#ico-carpeta"></use></svg></span>
+          <span class="col-ruta-texto"></span>
+        </div>
+        <div class="col-acciones">
+          <button type="button" class="col-boton" data-str="col.cambiar" data-tooltip data-cambiar-carpeta></button>
+          <button type="button" class="col-boton" data-str="col.abrirCarpeta" data-tooltip data-abrir-carpeta></button>
+          <button type="button" class="col-boton col-boton-refresh" data-str-aria="col.refresh" aria-label="Refrescar" data-tooltip data-refresh>
+            <svg class="col-ico-refresh" aria-hidden="true"><use href="assets/icons/reintentar.svg#ico-reintentar"></use></svg>
+            <span data-str="col.refresh"></span>
+          </button>
+        </div>
+        <hr class="col-div">
+        <div class="col-bloque-subs" data-subs="no">
+          <label class="col-switch">
+            <input type="checkbox" role="switch" disabled
+                   data-str-aria="col.incluirSubs" aria-label="Incluir subtítulos">
+            <span class="col-pista" aria-hidden="true"><span class="col-pulgar"></span></span>
+            <span class="col-switch-texto" data-str="col.incluirSubs"></span>
+          </label>
+          <p class="col-subs">
+            <svg aria-hidden="true"><use href="assets/icons/subs.svg#ico-subs"></use></svg>
+            <span data-str="col.subsNo"></span>
+          </p>
+          <p class="col-subs-idiomas" data-subs-idiomas hidden></p>
+        </div>
+      </div>
+      <p class="col-frase col-frase-salida">
+        <span data-str="col.fraseSalida"></span>
+        <svg class="col-adj" aria-hidden="true"><use href="assets/icons/corazon.svg#ico-corazon"></use></svg>
+      </p>
+    </aside>
+
+    <footer class="vidrio barra-inferior" inert>
+      <span class="barra-asa" data-arrastrar-barra role="button" tabindex="0"
+            data-str-aria="barra.arrastrar"></span>
+      <svg class="barra-ico" aria-hidden="true"><use href="assets/icons/onda.svg#ico-onda"></use></svg>
+      <p class="barra-aviso" role="status" aria-live="polite"></p>
+      <button type="button" class="barra-miauk" data-str-aria="barra.miauk" aria-label="Miauk">
+        <img src="assets/img/Icos/Gatito boton rapido Miauk1.png" alt="" aria-hidden="true" width="1774" height="887">
+      </button>
+      <button type="button" class="campo-x" data-str-aria="barra.cerrar" data-cerrar-barra>
+        <svg aria-hidden="true"><use href="assets/icons/limpiar.svg#ico-limpiar"></use></svg>
+      </button>
+    </footer>
+  </div>
+
+  <div class="vidrio aviso-cola aviso-motor" data-aviso-motor hidden>
+    <span class="aviso-cola-ico" aria-hidden="true">
+      <svg><use href="assets/icons/ajustes.svg#ico-ajustes"></use></svg>
+    </span>
+    <span class="aviso-cola-texto" role="status" data-aviso-motor-texto></span>
+  </div>
+
+  <div class="vidrio aviso-cola aviso-traba" data-traba hidden>
+    <span class="aviso-cola-texto" role="status" data-str="traba.texto"></span>
+    <span class="aviso-traba-botones">
+      <button type="button" class="aviso-cola-ver" data-str="col.refresh"
+              data-traba-refrescar></button>
+      <button type="button" class="aviso-cola-ver" data-str="traba.esperar"
+              data-traba-esperar></button>
+    </span>
+  </div>
+
+  <div class="capa-soltar" data-soltar hidden aria-hidden="true">
+    <span class="capa-soltar-texto" data-str="soltar.texto"></span>
+  </div>
+
+  <div class="recorrido-foco" data-recorrido-foco hidden aria-hidden="true"></div>
+  <div class="recorrido" data-recorrido hidden role="dialog" aria-modal="true"
+       aria-labelledby="recorrido-titulo" aria-describedby="recorrido-texto">
+    <div class="vidrio recorrido-caja" data-recorrido-caja>
+      <p class="recorrido-indicador" data-recorrido-indicador></p>
+      <h2 class="recorrido-titulo" id="recorrido-titulo" data-recorrido-titulo></h2>
+      <p class="recorrido-texto" id="recorrido-texto" data-recorrido-texto></p>
+      <div class="recorrido-botones">
+        <button type="button" class="recorrido-saltar" data-recorrido-saltar
+                data-str="recorrido.saltar"></button>
+        <span class="recorrido-espacio"></span>
+        <button type="button" class="col-boton" data-recorrido-anterior
+                data-str="recorrido.anterior"></button>
+        <button type="button" class="col-boton recorrido-siguiente"
+                data-recorrido-siguiente data-str="recorrido.siguiente"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/bridge.js"></script>
+  <script src="js/strings.es.js" defer></script>
+  <script src="js/strings.en.js" defer></script>
+  <script src="js/idioma.js" defer></script>
+  <script src="js/vigia.js" defer></script>
+  <script src="js/app.js" defer></script>
+</body>
+</html>

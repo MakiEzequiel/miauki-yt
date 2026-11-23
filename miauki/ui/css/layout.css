@@ -1,0 +1,2918 @@
+/* ============================================================
+   LAYOUT — grilla del "app shell".
+
+   1200×720          Índice de filas/columnas (referencia 1600×900)
+   ┌────┬───────────────────┬──────────┐
+   │    │   ENCABEZADO      │          │  fila 1: var(--h-encabezado)
+   │ L  ├───────────────────┤  DERECHA │
+   │ A  │   CENTRAL         │          │  fila 2: 1fr (minmax 0)
+   │ T  │  [CARD 1]         ├──────────┤
+   │ E  │  [CARD 2]         │          │  (la derecha solo fila 2)
+   │ R  │  [CARD 3]         │          │
+   │ A  ├───────────────────┴──────────┤
+   │ L  │      BARRA INFERIOR          │  fila 3: auto (colapsa a 0
+   └────┴──────────────────────────────┘   si está oculta)
+   ============================================================ */
+.app {
+  display: grid;
+  grid-template-columns: var(--w-sidebar) minmax(0, 1fr) var(--w-derecha);
+  grid-template-rows: var(--h-encabezado) minmax(0, 1fr) auto;
+  grid-template-areas:
+    "lateral   encabezado encabezado"
+    "lateral   central    derecha"
+    "inferior  inferior   inferior";
+  gap: 0 var(--esp-4);
+  height: 100vh;
+  padding: var(--esp-4);
+  position: relative;
+  z-index: var(--z-vidrio);
+}
+
+/* ---------- ZONAS ---------- */
+.barra-lateral {
+  grid-area: lateral;
+  min-height: 0; /* sin esto, su contenido infla la fila 2 y desborda la ventana */
+  margin-right: var(--esp-4);
+  display: flex;
+  flex-direction: column;
+  padding: var(--esp-4) var(--esp-1) var(--esp-3);
+  background: var(--superficie-lateral); /* más oscuro que las tarjetas */
+  overflow-y: auto; /* scroll fina solo si la altura no alcanza */
+  overflow-x: hidden; /* el lema rotado del pie no debe abrir scroll horizontal */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scroll) transparent;
+}
+
+/* ---------- BARRA LATERAL: navegación de 5 secciones ---------- */
+.nav-lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sep-item-nav);
+}
+
+.nav-item {
+  position: relative; /* la insignia de la Cola se apoya en la esquina */
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  width: 100%;
+  min-height: var(--h-item-nav);
+  padding: 0 var(--esp-4) 0 var(--esp-3);
+  border: var(--grosor-borde) solid transparent;
+  border-radius: var(--radio-pildora);
+  background: transparent;
+  color: var(--texto-secundario);
+  font-family: var(--fuente-interfaz);
+  font-size: var(--fs-nav);
+  font-weight: var(--peso-medio);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transicion-rapida), color var(--transicion-rapida),
+    box-shadow var(--transicion-rapida), border-color var(--transicion-rapida);
+}
+
+/* Marcador lateral (barrita blanca/magenta a la izquierda) solo en el activo */
+.nav-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  border-radius: 0 var(--radio-pildora) var(--radio-pildora) 0;
+  background: linear-gradient(180deg, var(--degradado-inicio), var(--degradado-fin));
+  opacity: 0;
+  transition: opacity var(--transicion-rapida);
+}
+
+.nav-item:hover {
+  background: rgba(124, 58, 237, 0.22);
+  color: var(--texto-principal);
+  box-shadow: 0 0 14px rgba(124, 58, 237, 0.45);
+}
+
+.nav-item:hover::before {
+  opacity: 1;
+}
+
+.nav-item:active {
+  background: var(--nav-press);
+}
+
+.nav-item:focus-visible {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 2px;
+}
+
+.nav-item[aria-current="page"] {
+  background: linear-gradient(90deg, var(--degradado-inicio), var(--degradado-fin));
+  border-color: rgba(255, 255, 255, 0.85);
+  color: var(--texto-principal);
+  box-shadow: 0 0 14px rgba(244, 114, 182, 0.6), 0 0 28px rgba(173, 31, 192, 0.45), var(--brillo-pildora);
+}
+
+.nav-item[aria-current="page"]::before {
+  opacity: 1;
+}
+
+.nav-ico {
+  width: var(--ico-nav);
+  height: var(--ico-nav);
+  flex: none;
+}
+
+.nav-texto {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.15;
+  /* wrap en espacios: "Cola de Descargas" pasa a 2 líneas bien, nunca corta palabras */
+}
+
+.nav-insignia {
+  position: absolute;
+  top: var(--esp-1);
+  right: var(--esp-2);
+  min-width: var(--esp-4);
+  padding: 0 var(--esp-1);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-pildora);
+  background: var(--degradado-fin);
+  color: var(--texto-principal);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi);
+  text-align: center;
+}
+
+/* ---------- PIE DE LA BARRA: gatito + lema manuscrito ---------- */
+.lateral-pie {
+  margin-top: auto;
+  padding-top: var(--esp-4);
+  text-align: center;
+}
+
+.pie-gatito {
+  width: 61.6px; /* +10% (plan 19/11) */
+  height: auto;
+  margin: 0 auto var(--esp-1);
+  display: block;
+}
+
+.pie-lema {
+  font-family: var(--fuente-manuscrita);
+  font-size: var(--fs-lema);
+  font-weight: var(--peso-medio);
+  color: var(--texto-secundario);
+  text-wrap: balance;
+  transform: rotate(-4deg); /* inclinado, como en la referencia */
+  padding: 0 4px; /* el giro no toca el borde de la barra */
+}
+
+/* Apoyo (09/11/2026): link chiquito bajo el lema; no compite con la navegación. */
+.pie-apoyar {
+  margin-top: var(--esp-1);
+  padding: 2px 6px;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.pie-apoyar:hover,
+.pie-apoyar:focus-visible {
+  color: var(--texto-principal);
+}
+
+.encabezado {
+  grid-area: encabezado;
+  /* 8px (antes 16): el banner recortado (2D.1) gana alto visible; el aire
+     con las tarjetas se mantiene sin comerle px al arte. */
+  margin-bottom: var(--esp-2);
+  /* Sin vidrio ni borde: el banner debe fundirse con la nebulosa de fondo.
+     overflow: hidden garantiza que el arte nunca pise lo de abajo (error de la v2.6). */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.banner {
+  /* Escala por altura con el tope del token --h-encabezado; centrado en anchos
+     grandes. El PNG "este OK" es transparente en los bordes: se funde con la
+     nebulosa sin rectángulo oscuro ni corte (no hace falta máscara).
+     max- + auto mantiene la proporción y NUNCA corta logo/píldora/gato. */
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+.central {
+  grid-area: central;
+  margin-bottom: var(--esp-4);
+}
+
+/* ---------- COLUMNA DERECHA (Fase 2D): frases + panel "Guardar en" + subs ---------- */
+.columna-derecha {
+  grid-area: derecha;
+  min-height: 0;
+  margin-bottom: var(--esp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  padding: var(--esp-8) var(--esp-3) var(--esp-4);
+  overflow-y: auto; /* solo si la altura no da: las frases ceden antes */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scroll) transparent;
+}
+
+/* Barra de scroll fina, translúcida y a tono (solo cuando hay overflow) */
+.central::-webkit-scrollbar,
+.columna-derecha::-webkit-scrollbar {
+  width: 8px;
+}
+.central::-webkit-scrollbar-track,
+.columna-derecha::-webkit-scrollbar-track {
+  background: transparent;
+}
+.central::-webkit-scrollbar-thumb,
+.columna-derecha::-webkit-scrollbar-thumb {
+  background: var(--color-scroll);
+  border-radius: var(--radio-pildora);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.col-frase {
+  font-family: var(--fuente-manuscrita);
+  font-size: var(--fs-col-frase);
+  font-weight: var(--peso-medio);
+  line-height: 1.15;
+  color: var(--texto-principal);
+  text-align: center;
+  text-wrap: balance; /* a 1200 la columna es angosta: reparte parejo, sin palabras sueltas */
+  padding: 0 calc(var(--esp-6) + 4px); /* aire a los costados + lo que se inclina */
+}
+
+.col-frase-entrada {
+  transform: rotate(-4deg);
+}
+
+.col-frase-salida {
+  margin-top: auto; /* ancla abajo, como el lema de la barra lateral */
+  transform: rotate(-3deg);
+  padding: 0 calc(var(--esp-2) + 4px); /* "Tu video, en tus manos ♡" entra en una línea */
+}
+
+.col-adj {
+  width: 16px;
+  height: 16px;
+  vertical-align: -2px;
+  margin-left: 4px;
+  color: var(--degradado-fin);
+}
+
+/* Panel de vidrio con la ruta de guardado y los dos botones secundarios */
+.col-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  padding: var(--esp-3);
+  background: var(--superficie-vidrio);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-tarjeta);
+}
+
+.col-ruta {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+}
+
+.col-rotulo {
+  margin: 0;
+  font-size: var(--texto-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-secundario);
+}
+
+.col-ruta:focus-visible {
+  outline: 2px solid var(--rosa-neon);
+  outline-offset: 3px;
+  border-radius: var(--radio-medio);
+}
+
+.col-ruta-texto {
+  flex: 1;
+  min-width: 0; /* base del recorte: sin esto el flex no achica y la ruta se desborda */
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: var(--texto-sm);
+  color: var(--texto-principal);
+}
+
+.col-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+}
+
+.col-boton {
+  height: var(--h-btn-col);
+  background: var(--fondo-campo);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-pildora);
+  color: var(--texto-principal);
+  font-family: var(--fuente-interfaz);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  cursor: pointer;
+  transition: background var(--transicion-rapida), box-shadow var(--transicion-rapida);
+}
+
+.col-boton:hover {
+  background: var(--nav-hover);
+  box-shadow: var(--brillo-borde);
+}
+
+.col-boton:active {
+  background: var(--nav-press);
+}
+
+.col-boton:focus-visible {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 2px;
+}
+
+.col-boton:disabled {
+  opacity: var(--op-deshab);
+  box-shadow: none;
+  cursor: default;
+}
+
+/* Refresh (plan de ajustes UI, paso 4): icono de dos flechas + texto. */
+.col-boton-refresh {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-2);
+}
+
+.col-ico-refresh {
+  width: 18px;
+  height: 18px;
+  color: var(--texto-secundario);
+}
+
+/* Cerrar vista previa (paso 5): × en la esquina de la tarjeta de video.
+   .video-listo[hidden] gana a display:flex para poder ocultarla por sesion. */
+.video-listo {
+  position: relative;
+}
+
+.video-listo[hidden] {
+  display: none !important;
+}
+
+.preview-cerrar {
+  position: absolute;
+  top: var(--esp-2);
+  right: var(--esp-2);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fondo-campo);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-pildora);
+  color: var(--texto-secundario);
+  cursor: pointer;
+  transition: background var(--transicion-rapida);
+}
+
+.preview-cerrar:hover {
+  background: var(--nav-hover);
+  color: var(--texto-principal);
+}
+
+.preview-cerrar:focus-visible {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 2px;
+}
+
+.preview-cerrar svg {
+  width: 14px;
+  height: 14px;
+}
+
+.col-caja {
+  width: var(--ico-caja);
+  height: var(--ico-caja);
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-medio);
+  background: var(--fondo-campo);
+  color: var(--texto-secundario);
+}
+
+.col-caja svg {
+  width: 20px;
+  height: 20px;
+}
+
+.col-div {
+  border: 0;
+  border-top: var(--grosor-borde) solid var(--borde-vidrio);
+  opacity: 0.8;
+  margin: var(--esp-4) 0;
+}
+
+/* Dentro del panel el espaciado lo pone el gap del flex */
+.col-panel .col-div {
+  margin: 0;
+}
+
+.col-subs {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+.col-subs svg {
+  width: 24px;
+  height: 24px;
+  flex: none;
+}
+
+/* Idiomas disponibles cuando hay subtítulos (Fase 3B) */
+.col-subs-idiomas {
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+  overflow-wrap: anywhere;
+}
+
+/* Interruptor "Incluir subtítulos": patrón nativo (input + pista). El nombre
+   accesible lo da data-str-aria sobre el input (app.js lo inyecta). */
+.col-bloque-subs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+}
+
+.col-switch {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  font-size: var(--texto-sm);
+  color: var(--texto-principal);
+  cursor: pointer;
+}
+
+.col-switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0; /* el input sigue enfocable y conmuta con Espacio */
+}
+
+.col-pista {
+  position: relative;
+  flex: none;
+  width: var(--w-switch);
+  height: var(--h-switch);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-pildora);
+  background: var(--fondo-campo);
+  transition: background var(--transicion-rapida);
+}
+
+.col-pulgar {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: calc(var(--h-switch) - 6px);
+  height: calc(var(--h-switch) - 6px);
+  border-radius: 50%;
+  background: var(--texto-secundario);
+  transition: transform var(--transicion-rapida), background var(--transicion-rapida);
+}
+
+.col-switch input:checked + .col-pista {
+  background: linear-gradient(90deg, var(--degradado-inicio), var(--degradado-fin));
+}
+
+.col-switch input:checked + .col-pista .col-pulgar {
+  transform: translateX(calc(var(--w-switch) - var(--h-switch) + 2px));
+  background: var(--texto-principal);
+}
+
+.col-switch input:focus-visible + .col-pista {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 2px;
+}
+
+/* El atributo de datos del bloque manda (app.js: MiaukiUI.actualizarSubs):
+   "no" = video sin subtítulos → interruptor deshabilitado + fila explicativa;
+   "si" = interruptor activo y la fila se oculta. */
+.col-bloque-subs[data-subs="no"] .col-switch {
+  opacity: var(--op-deshab);
+  cursor: not-allowed;
+}
+
+.col-bloque-subs[data-subs="si"] .col-subs {
+  display: none;
+}
+
+/* ---------- COLUMNA CENTRAL: 3 tarjetas apiladas + scroll ---------- */
+.central {
+  /* Flex en vez de grid: la tarjeta crece con su contenido (flex:none) y el
+     min-height por tarjeta da la altura de la referencia. Con grid, la pista
+     max-content NO crecía cuando la tarjeta tiene overflow:hidden (quedaba
+     recortado el botón Descargar a 880 px). */
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2); /* Fase 9 B4/B5: 12→8 para que la miniatura +35 % y el botón doble entren sin scroll a 900 */
+  min-height: 0; /* permite que el scroll funcione dentro de la grilla */
+  overflow-y: auto; /* barra SOLO si el contenido no entra */
+  padding-right: var(--esp-1); /* aire entre borde y barra cuando aparece */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scroll) transparent;
+}
+
+/* Alturas de la referencia como piso: si el contenido pide más, la tarjeta
+   crece y el scroll de .central se encarga (nadie se corta ni se pisa).
+   OJO: se usa :nth-of-type (cuenta solo <section>), NO :nth-child: el h1
+   sr-only de Inicio (4C) es el primer hijo de .central y corría los índices
+   un lugar (card3 quedaba sin piso -> Inicio ganaba scroll a 1200x720). */
+.central .tarjeta:nth-of-type(1) {
+  min-height: var(--h-card-1);
+}
+.central .tarjeta:nth-of-type(2) {
+  min-height: var(--h-card-2);
+}
+.central .tarjeta:nth-of-type(3) {
+  min-height: var(--h-card-3);
+}
+
+/* ============================================================
+   TARJETAS 1-3 (Fase 2C) — cabecera con insignia + contenido
+   ============================================================ */
+.tarjeta {
+  display: flex;
+  flex: none; /* crece con su contenido; el piso lo da min-height de .central */
+  flex-direction: column;
+  gap: var(--esp-2); /* 2D.2: 12→8 de compactación vertical */
+  padding: var(--esp-2) var(--esp-6); /* Fase 9 B: 12→8 vertical (lo pide el botón doble y la miniatura) */
+  overflow: hidden; /* el elipsis del título de video nunca pinta fuera */
+}
+
+.tarjeta-cab {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-4);
+}
+
+/* Insignia 1/2/3 con anillo luminoso */
+.paso-num {
+  width: var(--diam-num);
+  height: var(--diam-num);
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--borde-num) solid var(--color-num);
+  border-radius: 50%;
+  background: var(--fondo-num);
+  box-shadow: var(--glow-num);
+  font-family: var(--fuente-manuscrita);
+  font-size: 2.125rem;           /* ~34px (plan: círculo 56px, 34px, line-height 56px) */
+  line-height: 1;
+  font-weight: 700; /* iguala el grosor de la referencia (era 600 / var(--peso-semi)) */
+  color: var(--texto-principal);
+}
+
+/* Centrado del dígito dentro del círculo: compensa la bandera larga del "1"
+   y métricas de Caveat en los tres dígitos. */
+.paso-num > span {
+  display: inline-block;
+  transform: translateX(-0.12em);
+}
+
+.paso-titulo {
+  font-family: var(--fuente-manuscrita);
+  font-size: var(--fs-tarjeta);
+  font-weight: var(--peso-semi);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--texto-principal);
+  text-shadow: var(--glow-titulo);
+}
+
+.paso-sub {
+  font-size: var(--fs-sub);
+  color: var(--texto-secundario);
+}
+
+/* ---------- PASO 1: campo de link + botones ---------- */
+.fila-link {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+}
+
+.campo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  height: var(--h-campo);
+  padding: 0 var(--esp-3);
+  background: var(--fondo-campo);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-pildora);
+}
+
+.campo:focus-within {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 2px;
+}
+
+.campo-ico {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  color: var(--texto-secundario);
+}
+
+.campo-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  font-family: var(--fuente-interfaz);
+  font-size: var(--texto-md);
+  color: var(--texto-principal);
+}
+
+.campo-input::placeholder {
+  color: var(--texto-secundario);
+  opacity: 0.75;
+}
+
+.campo-x,
+.campo-pegar {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--texto-secundario);
+  cursor: pointer;
+}
+
+.campo-x[hidden],
+.campo-pegar[hidden] {
+  display: none; /* sin esto, display:grid pisa el [hidden] nativo */
+}
+
+.campo-x:hover,
+.campo-pegar:hover {
+  background: var(--nav-hover);
+  color: var(--texto-principal);
+}
+
+.campo-x:focus-visible,
+.campo-pegar:focus-visible {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 1px;
+}
+
+.campo-x svg,
+.campo-pegar svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Botón secundario: borde fino, sin degradado (el degradado es solo principal) */
+.btn-analizar {
+  height: var(--h-campo);
+  flex: none;
+  padding: 0 var(--esp-4);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-pildora);
+  background: transparent;
+  color: var(--texto-principal);
+  font-family: var(--fuente-interfaz);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semi);
+  cursor: pointer;
+  transition: background var(--transicion-rapida), box-shadow var(--transicion-rapida);
+}
+
+.btn-analizar:hover {
+  background: var(--nav-hover);
+  box-shadow: var(--brillo-borde);
+}
+
+.btn-analizar:active {
+  background: var(--nav-press);
+}
+
+.btn-analizar:focus-visible {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 2px;
+}
+
+/* Botón principal: PNG neón (ya trae píldora + huella + glow) */
+.btn-miauk {
+  height: var(--h-btn-miauk);
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: transform var(--transicion-rapida), filter var(--transicion-rapida);
+}
+
+.btn-miauk img {
+  display: block;
+  height: 100%;
+  width: auto;
+}
+
+.btn-miauk:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+
+.btn-miauk:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-miauk:focus-visible {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 3px;
+  border-radius: var(--radio-pildora);
+}
+
+.btn-miauk:disabled {
+  opacity: var(--op-deshab);
+  filter: grayscale(0.4);
+  cursor: default;
+}
+
+.ayuda-tenue {
+  display: flex;
+  align-items: center;
+  min-height: 25px; /* F5 P0 (8c): altura reservada, igual que el aviso, para
+    intercambiarlos sin que cambie el alto de la tarjeta 1 */
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+  opacity: 0.9; /* AA: con 0.8 medía 4.48:1 (umbral 4.5) */
+}
+
+/* display:flex pisa el [hidden] del navegador: hay que ocultarlo a mano
+   (F5 P0 8c: la ayuda se esconde cuando aparece el aviso de la cola). */
+.ayuda-tenue[hidden] {
+  display: none;
+}
+
+/* Error del análisis (Fase 3B): role="alert" lo anuncia al aparecer */
+.paso1-error {
+  margin-top: var(--esp-1);
+  font-size: var(--texto-sm);
+  color: var(--error);
+}
+
+/* ---------- PASO 2: video (vacío / skeleton / listo) ---------- */
+/* Un solo atributo controla los 3 estados: data-estado-video en .video-zona */
+.video-zona > * {
+  display: none;
+}
+
+.video-zona[data-estado-video="vacio"] .video-vacio {
+  display: flex;
+}
+
+.video-zona[data-estado-video="skeleton"] .video-skeleton {
+  display: flex;
+}
+
+.video-zona[data-estado-video="listo"] .video-listo {
+  display: flex;
+}
+
+/* D5b: el vacío va centrado y con el ícono del manifiesto (video.svg). */
+.video-vacio {
+  margin: auto 0; /* centrado vertical en el espacio de la tarjeta */
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-2);
+  text-align: center;
+}
+
+.video-vacio-ico {
+  width: 42px;
+  height: 42px;
+  color: var(--texto-secundario);
+  opacity: 0.7;
+}
+
+.video-fila {
+  align-items: center;
+  gap: var(--esp-4);
+  padding: var(--esp-1) var(--esp-3); /* Fase 9 B4: 8→4 vertical (miniatura +35 %) */
+  background: var(--fondo-campo);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-medio);
+}
+
+.video-mini {
+  width: var(--w-mini);
+  height: auto; /* el atributo height del HTML pisa aspect-ratio si no se anula */
+  aspect-ratio: 16 / 9;
+  flex: none;
+  border-radius: var(--radio-medio); /* sin marco violeta: solo la esquina redondeada */
+  object-fit: cover;
+  object-position: center 30%; /* la cara del gato queda visible al recortar 16:9 */
+}
+
+.video-info {
+  min-width: 0;
+}
+
+.video-titulo {
+  font-size: var(--texto-md);
+  font-weight: var(--peso-semi);
+  color: var(--texto-principal);
+  /* 1 línea con "…" (decisión Maki 15/10/2026 a): el título completo
+     está en el tooltip (title) que pone app.js */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.video-meta {
+  margin-top: var(--esp-1);
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  display: flex;
+  gap: var(--esp-2);
+}
+
+/* Tarjeta 2 en modo imagen (Fase 3B): cuadrícula de fotos + cantidad */
+.img-cuadricula {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: var(--esp-2);
+}
+
+.img-cuadricula img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--radio-medio);
+}
+
+.img-cantidad {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  flex: none;
+}
+
+/* Skeleton (carga): miniatura y líneas gris-violeta con brillo que pasa */
+.video-skeleton {
+  pointer-events: none;
+}
+
+.sk {
+  background: linear-gradient(
+    90deg,
+    rgba(168, 85, 247, 0.12) 25%,
+    rgba(168, 85, 247, 0.28) 50%,
+    rgba(168, 85, 247, 0.12) 75%
+  );
+  background-size: 200% 100%;
+  animation: sk-brillo 1.4s ease-in-out infinite;
+  border-radius: var(--radio-medio);
+}
+
+.sk-mini {
+  width: var(--w-mini);
+  aspect-ratio: 16 / 9;
+  flex: none;
+}
+
+.sk-lineas {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+}
+
+.sk-largo {
+  height: 18px;
+  width: 62%;
+}
+
+.sk-corto {
+  height: 14px;
+  width: 34%;
+}
+
+@keyframes sk-brillo {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* ---------- PASO 3: calidad (segmentados + panel + descargar) ---------- */
+.paso3-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-3) var(--esp-6);
+}
+
+.paso3-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-3);
+}
+
+/* Fase 9, B3: aviso de "este post solo tiene imágenes" (Video y Música apagados) */
+.tipo-nota {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+/* Panel de datos (formato / tamaño / tiempo) */
+.panel-datos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-1);
+  padding: var(--esp-2) var(--esp-3);
+  background: var(--fondo-campo);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-medio);
+}
+
+.panel-dato {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+.panel-dato svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+/* Segmentado accesible: radiogroup con roving tabindex (flechas en app.js) */
+.segmentado {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--fondo-campo);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-pildora);
+}
+
+.segmentado [role="radio"] {
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  background: transparent;
+  color: var(--texto-secundario);
+  font-family: var(--fuente-interfaz);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  padding: var(--esp-2) var(--esp-3); /* F5 P0 (8b-ii): 16->12 para que la fila
+    de calidad (formato + calidad + "Más opciones") NO envuelva a 1200 y card3
+    no gane una línea (era la causa del recorte de "Más opciones" y del scroll) */
+  border-radius: var(--radio-pildora);
+  cursor: pointer;
+  transition: background var(--transicion-rapida), color var(--transicion-rapida),
+    box-shadow var(--transicion-rapida), border-color var(--transicion-rapida);
+}
+
+.segmentado [role="radio"]:hover {
+  background: var(--nav-hover);
+  color: var(--texto-principal);
+}
+
+/* Fase 9 B3: Video y Música apagados cuando el post es solo imágenes */
+.segmentado [role="radio"]:disabled {
+  opacity: var(--op-deshab);
+  cursor: default;
+}
+
+.segmentado [role="radio"]:disabled:hover {
+  background: transparent;
+  color: var(--texto-secundario);
+}
+
+.segmentado [role="radio"]:focus-visible {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 1px;
+}
+
+.segmentado [role="radio"][aria-checked="true"] {
+  background: linear-gradient(90deg, var(--degradado-inicio), var(--degradado-fin));
+  color: var(--texto-principal);
+  font-weight: var(--peso-semi);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 12px rgba(244, 114, 182, 0.7), 0 0 26px rgba(173, 31, 192, 0.55), var(--brillo-pildora);
+}
+
+/* "Más opciones": expande las resoluciones (aria-expanded en el botón) */
+.btn-mas {
+  padding: var(--esp-2) var(--esp-3);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-pildora);
+  background: transparent;
+  color: var(--texto-secundario);
+  font-family: var(--fuente-interfaz);
+  font-size: var(--texto-sm);
+  cursor: pointer;
+  transition: background var(--transicion-rapida), color var(--transicion-rapida);
+}
+
+.btn-mas:hover,
+.btn-mas[aria-expanded="true"] {
+  background: var(--nav-hover);
+  color: var(--texto-principal);
+}
+
+.btn-mas:focus-visible {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 2px;
+}
+
+.mas-opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+}
+
+.mas-opciones[hidden] {
+  display: none; /* sin esto, display:flex pisa el [hidden] nativo */
+}
+
+/* B1: aviso de formato poco compatible (MKV / AV1 / VP9) */.aviso-formato {
+  margin: 0;
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+}
+
+.aviso-formato[hidden] {
+  display: none;
+}
+
+/* ---------- CAPA "SOLTÁ EL LINK ACÁ" (Fase 7, B2) ----------
+   pointer-events:none: no tapa el arrastre ni atrapa el foco. */
+.capa-soltar {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-capa);
+  display: grid;
+  place-items: center;
+  background: var(--velo-oscuro);
+  pointer-events: none;
+}
+
+.capa-soltar[hidden] {
+  display: none;
+}
+
+.capa-soltar-texto {
+  padding: var(--esp-4) var(--esp-6);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-tarjeta);
+  background: var(--fondo-campo);
+  box-shadow: var(--sombra-flotante);
+  color: var(--texto-principal);
+  font-family: var(--fuente-manuscrita);
+  font-size: var(--texto-xl);
+}
+
+.reducir-efectos .capa-soltar-texto {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capa-soltar-texto {
+    transition: none;
+  }
+}
+
+/* ---------- BARRA DE PORTAPAPELES (Fase 5C A3): FLOTANTE ----------
+   Vive fuera de la grilla (position:fixed): no empuja contenido (scroll = 0
+   con la barra visible) y nace abajo a la derecha, que es donde menos molesta
+   (decisión de Maki del 23/10/2026). Se descarta con × o Escape, o sola a los
+   10 s. */
+.barra-inferior {
+  position: fixed;
+  right: var(--esp-4);
+  bottom: var(--esp-4);
+  z-index: var(--z-barra);
+  width: fit-content;
+  max-width: min(var(--w-barra), calc(100vw - var(--esp-4) - var(--esp-4)));
+  height: var(--h-barra);
+  /* Ajustes 22/11: un 5% más transparente que el vidrio estándar. */
+  background: rgba(40, 18, 96, 0.33);
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  /* Sin padding vertical: el recuadro se ciñe al alto del contenido. */
+  padding: 0 var(--esp-1) 0 var(--esp-1);
+  border-radius: var(--radio-pildora);
+  box-shadow: var(--sombra-flotante);
+  transition: opacity var(--transicion-media), transform var(--transicion-media),
+    visibility var(--transicion-media);
+}
+
+/* Arrastrada: mandan left/top inline; se sueltan los anclajes de la esquina. */
+.barra-inferior.arrastrada {
+  right: auto;
+  bottom: auto;
+}
+
+/* Asa de arrastre: cursor de agarre y puntos (sin texto, no lo lee el lector) */
+.barra-asa {
+  flex: none;
+  width: var(--asa-barra);
+  height: calc(var(--h-barra) - var(--esp-4));
+  border-radius: var(--radio-medio);
+  cursor: grab;
+  touch-action: none;
+  opacity: 0.85;
+  background-image: radial-gradient(circle, var(--texto-secundario) 2px, transparent 2.5px);
+  background-size: calc(var(--asa-barra) / 2) calc(var(--asa-barra) / 2);
+  background-position: center;
+}
+
+.barra-asa:active {
+  cursor: grabbing;
+}
+
+.barra-asa:focus-visible {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barra-inferior {
+    transition: none;
+  }
+}
+
+.app.sin-inferior .barra-inferior {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(var(--esp-2));
+  pointer-events: none;
+}
+
+.barra-ico {
+  width: var(--ico-barra);
+  height: var(--ico-barra);
+  flex: none;
+  color: var(--texto-secundario);
+}
+
+.barra-aviso {
+  flex: none;
+  min-width: 0;
+  font-size: var(--fs-barra);
+  font-weight: var(--peso-semi);
+  color: var(--texto-principal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barra-miauk {
+  flex: none;
+  height: var(--h-miauk-barra);
+  width: var(--w-miauk-barra);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-pildora);
+  overflow: hidden;
+  background: none;
+  cursor: pointer;
+  transition: filter var(--transicion-rapida);
+}
+
+.barra-miauk img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radio-pildora);
+}
+
+.barra-miauk:hover {
+  filter: brightness(1.08);
+}
+
+.barra-miauk:focus-visible {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 2px;
+}
+
+/* El botón X de la barra reutiliza .campo-x (mismo componente), solo más grande */
+.barra-inferior .campo-x {
+  width: var(--x-barra);
+  height: var(--x-barra);
+}
+
+.barra-inferior .campo-x svg {
+  width: var(--ico-barra);
+  height: var(--ico-barra);
+}
+
+/* ============================================================
+   PANTALLAS / NAVEGACIÓN (Fase 4C Parte B, porción 1)
+   ============================================================ */
+/* Cada pantalla es un bloque con data-pantalla; app.js oculta las inactivas.
+   [hidden] necesita regla propia: el display:flex de .tarjeta le gana al
+   display:none del navegador. */
+.central [data-pantalla][hidden] {
+  display: none;
+}
+
+/* Columna derecha ("frases + Guardar en") solo en Inicio: en el resto la
+   grilla se cierra a 2 columnas como en el nivel compacto. */
+.app.sin-derecha {
+  grid-template-columns: var(--w-sidebar) minmax(0, 1fr);
+  grid-template-areas:
+    "lateral  encabezado"
+    "lateral  central"
+    "inferior inferior";
+}
+
+.app.sin-derecha .columna-derecha {
+  display: none;
+}
+
+/* Utilidad: contenido solo para lectores de pantalla (h1 de Inicio). */
+.sr-solo {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Placeholder de las secciones aún no construidas (Historial/Ajustes/Acerca) */
+.pantalla-vacia {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-3);
+  text-align: center;
+}
+
+.pantalla-titulo {
+  font-family: var(--fuente-interfaz);
+  font-size: var(--texto-xl);
+  color: var(--texto-principal);
+  margin: 0;
+}
+
+/* El h1 de cada pantalla recibe foco SOLO por programa (para que el lector
+   anuncie la sección): nunca dibuja anillo (F5 P0 8a). El anillo se mantiene
+   para teclado en los controles (nav, botones, campo, switches). */
+.pantalla-titulo:focus {
+  outline: none;
+}
+
+.pantalla-pronto {
+  font-size: var(--texto-md);
+  color: var(--texto-secundario);
+  margin: 0;
+}
+
+/* --- Pantalla Ajustes (Fase 5 B3) --- */
+.pantalla-ajustes {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  min-height: 0;
+  padding: var(--esp-3) var(--esp-6); /* igual que Historial: el título no pisa el borde */
+}
+
+.ajustes-grilla {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  /* Plan 19/11/2026: los recuadros de Ajustes se autoadaptan al ancho de la
+     ventana (auto-fit arma/colapsa columnas segun el espacio disponible, en
+     vez de 2 fijas) y miden EXACTAMENTE su contenido (min-content/max-content):
+     sin minimo forzado, asi no queda nunca espacio en blanco adentro. */
+  grid-template-columns: repeat(auto-fit, minmax(min-content, max-content));
+  gap: var(--esp-3);
+  align-content: start;
+  padding-right: var(--esp-1);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scroll) transparent;
+}
+
+.ajuste {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  padding: var(--esp-2) var(--esp-3); /* compacto: menos blanco interno (plan 19/11) */
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-tarjeta);
+  background: var(--fondo-campo);
+}
+
+.ajuste-titulo {
+  margin: 0;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--texto-secundario);
+}
+
+.ajuste-ruta {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--texto-principal);
+  overflow-wrap: anywhere;
+}
+
+.ajuste-select {
+  width: 100%;
+  padding: var(--esp-2) var(--esp-3);
+  font-family: var(--fuente-interfaz);
+  font-size: var(--texto-sm);
+  color: var(--texto-principal);
+  background: var(--fondo-base);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-medio);
+}
+
+.ajuste-select:focus-visible {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 2px;
+}
+
+.ajuste-nota {
+  margin: 0;
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+}
+
+/* Archivo de cookies (Fase 9, B2b): nombre, botones y aviso de privacidad. */
+.ajuste-archivo {
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+}
+
+.ajuste-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+}
+
+.ajuste-botones .col-boton { flex: 1 1 auto; }
+
+.ajuste-privacidad { color: var(--texto-principal); }
+
+.ajuste-estado {
+  margin: 0;
+  min-height: 1.2em; /* reserva: el aviso no mueve el layout */
+  font-size: var(--texto-sm);
+  color: var(--exito);
+}
+
+/* D5: "Guardado." en la esquina de la tarjeta que se acaba de tocar. */
+.ajuste {
+  position: relative;
+}
+
+.ajuste > .ajuste-estado {
+  position: absolute;
+  top: var(--esp-2);
+  right: var(--esp-3);
+  min-height: 0;
+  font-size: var(--texto-xs);
+}
+
+.ajuste > .ajuste-estado[data-error="si"] {
+  color: var(--error-texto);
+}
+
+/* --- Pantalla Acerca de (Fase 5 B4) --- */
+.pantalla-acerca {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  min-height: 0;
+  padding: var(--esp-3) var(--esp-6); /* igual que Historial: el título no pisa el borde */
+}
+
+/* Acerca de (plan archivos y cola, paso 4): TODO el texto legible de esta
+   pantalla y la cara del gatito van +10% siempre. zoom escala el bloque
+   entero (texto, ícono y botones) sin tocar el resto de la app. */
+.pantalla-acerca {
+  zoom: 1.1;
+}
+
+/* Con "Un poco más grande" activo el total se topea en 1.17 (nunca 1.20):
+   1.1 (zoom) x 1.0636 (rem ya al 110%) = 1.17. */
+html.font-grande .pantalla-acerca {
+  zoom: 1.0636;
+}
+
+.acerca {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: safe center; /* si no entra, alinea arriba: no corta el ícono */
+  gap: var(--esp-2);
+  text-align: center;
+  padding-right: var(--esp-1);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scroll) transparent;
+}
+
+.acerca-ico {
+  width: 105.6px; /* +10% (plan 19/11) */
+  height: 105.6px;
+  object-fit: contain;
+}
+
+.acerca-nombre {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--esp-2);
+}
+
+.acerca-nombre-estilizado {
+  /* Marca MIAUKI YT estilizada (ajustes 21/11): manuscrita, grande y con
+     degradado neón. Si el navegador no soporta el recorte con degradado,
+     queda un violeta claro legible (fallback). */
+  font-family: var(--fuente-manuscrita);
+  font-size: var(--texto-2xl);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  color: var(--color-num);
+  /* Ajustes 22/11: la manuscrita se sale de su caja y el recorte del
+     degradado le cortaba la "T" final. El relleno le da lugar al glifo (el
+     margen negativo mantiene el texto en su sitio) y el trazo fino la hace
+     un poquito más gruesa sin cambiar la tipografía. */
+  padding: 0.14em 0.18em;
+  margin: -0.14em -0.18em;
+  -webkit-text-stroke: 0.5px currentColor;
+}
+
+@supports (-webkit-background-clip: text) {
+  .acerca-nombre-estilizado {
+    background: linear-gradient(90deg, var(--degradado-inicio),
+                var(--degradado-fin), var(--rosa-neon));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 12px rgba(192, 38, 211, 0.45));
+  }
+}
+
+.acerca-version {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+.acerca-desc {
+  margin: 0;
+  font-size: var(--texto-md);
+  color: var(--texto-principal);
+}
+
+.acerca-lema {
+  margin: 0;
+  font-family: var(--fuente-manuscrita);
+  font-size: var(--texto-lg);
+  color: var(--texto-secundario);
+}
+
+.acerca-dato {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+.acerca-gracias {
+  margin: 0;
+  font-size: var(--texto-md);
+  color: var(--texto-principal);
+}
+
+.acerca-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--esp-3); /* aire entre botones: no se tocan */
+  margin-top: var(--esp-3);
+}
+
+.acerca-instagram,
+.acerca-facebook {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-1);
+}
+
+/* "Ver el recorrido" (plan 19/11/2026): azul nebulosa para destacarse por
+   encima de los demas botones (color del boton y de su recuadro). */
+.acerca-recorrido {
+  background: var(--fondo-nebulosa);
+  border-color: var(--azul-nebulosa);
+  color: var(--azul-nebulosa);
+  box-shadow: var(--brillo-nebulosa);
+}
+
+.acerca-recorrido:hover {
+  background: var(--fondo-nebulosa-hover);
+  box-shadow: var(--brillo-nebulosa-fuerte);
+}
+
+.acerca-recorrido:active {
+  background: var(--fondo-nebulosa-hondo);
+}
+
+/* Donación (09/11/2026): bloque discreto, con borde suave y sin robar alto. */
+.acerca-apoyo {
+  margin-top: var(--esp-3);
+  padding: var(--esp-2) var(--esp-3);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-medio);
+  background: var(--fondo-campo);
+  text-align: center;
+}
+
+.acerca-apoyo-texto {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--texto-principal);
+}
+
+.acerca-apoyo-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--esp-2);
+  margin-top: var(--esp-2);
+}
+
+/* Botones de Acerca de (plan 19/11/2026): un pelo mas anchos hacia los
+   costados para que el texto quede perfectamente encuadrado. Aplica a la
+   donacion (PayPal / Copiar alias) y a los botones de la grilla (Instagram,
+   Facebook, Abrir carpeta de registros, Ver el recorrido). */
+.acerca-apoyo-acciones .col-boton,
+.acerca-acciones .col-boton {
+  padding-inline: var(--esp-3);
+}
+
+.acerca-apoyo-alias {
+  margin: var(--esp-1) 0 0;
+  font-size: calc(var(--texto-xs) + 2pt); /* +2 puntos (plan 20/11) */
+  color: var(--texto-secundario);
+}
+
+/* El alias se puede seleccionar a mano si el portapapeles falla. */
+.acerca-apoyo-dato {
+  user-select: all;
+  color: var(--texto-principal);
+}
+
+.acerca-ico-red {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.acerca-enlace {
+  align-self: center;
+  padding: var(--esp-1);
+  border: 0;
+  background: none;
+  font-family: var(--fuente-interfaz);
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.acerca-enlace:focus-visible {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 2px;
+  border-radius: var(--radio-medio);
+}
+
+.acerca-estado {
+  margin: 0;
+  min-height: 1.2em; /* reserva: el aviso no mueve el layout */
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+.acerca-detalles {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+/* La linea de licencia vive dentro del desplegable "Detalles tecnicos" (plan
+   19/11/2026): un poco de aire sobre ella. */
+.acerca-detalles .acerca-dato {
+  margin-top: var(--esp-2);
+}
+
+.acerca-detalles summary {
+  cursor: pointer;
+}
+
+.acerca-lista {
+  margin: var(--esp-1) 0 0;
+  padding-left: var(--esp-4);
+  text-align: left;
+}
+
+/* Ajustes 22/11: la frase de privacidad va justo encima del texto legal y la
+   palabra "Privacidad" queda en rojo neón con halo difuminado. */
+.acerca-privacidad {
+  margin: var(--esp-2) 0 0;
+  font-size: var(--texto-md);
+  color: var(--texto-principal);
+}
+
+.acerca-privacidad-neon {
+  font-weight: 600;
+  color: var(--error-texto); /* rojo legible sobre la tarjeta (6,0:1) */
+  text-shadow: 0 0 6px rgba(255, 42, 42, 0.85),
+               0 0 16px rgba(255, 42, 42, 0.55),
+               0 0 30px rgba(255, 47, 149, 0.45);
+}
+
+.acerca-legal {
+  margin: var(--esp-2) 0 0;
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario); /* AA: 6.29:1 sobre el vidrio (medido F5) */
+}
+
+/* --- Pantalla Historial (Fase 6, B2) --- */
+.pantalla-historial {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  min-height: 0; /* la lista es la que hace scroll */
+  padding: var(--esp-3) var(--esp-6);
+}
+
+.hist-cab {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+}
+
+.hist-cab .pantalla-titulo {
+  margin-right: auto;
+}
+
+.hist-conteo {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  white-space: nowrap;
+}
+
+.hist-confirmar {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  font-size: var(--texto-sm);
+  color: var(--texto-principal);
+}
+
+.hist-confirmar[hidden] {
+  display: none;
+}
+
+.hist-nota {
+  margin: 0;
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+}
+
+.hist-lista {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--esp-1) 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scroll) transparent;
+}
+
+.hist-lista:empty {
+  display: none;
+}
+
+.hist-item {
+  flex: none;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--esp-3);
+  padding: var(--esp-2) var(--esp-3);
+  border-radius: var(--radio-tarjeta);
+}
+
+.hist-item[data-falta="si"] .hist-titulo {
+  color: var(--texto-secundario);
+}
+
+.hist-mini {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--radio-medio);
+  background: var(--fondo-campo);
+}
+
+.hist-mini-vacia {
+  background: linear-gradient(140deg, var(--fondo-campo), transparent);
+}
+
+.hist-mini-gatito {
+  object-fit: cover;
+}
+
+.hist-cuerpo {
+  min-width: 0; /* permite el ellipsis del título en 3 niveles de ancho */
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hist-titulo {
+  margin: 0;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--texto-principal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hist-meta {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+}
+
+/* Ícono por tipo y por sitio: el texto sigue al lado (nada de solo íconos). */
+.hist-dato {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hist-ico {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  color: var(--texto-secundario);
+  opacity: 0.9;
+}
+
+.hist-lista::-webkit-scrollbar {
+  width: 8px;
+}
+
+.hist-lista::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.hist-lista::-webkit-scrollbar-thumb {
+  background: var(--color-scroll);
+  border-radius: var(--radio-pildora);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.hist-falta {
+  margin: 0;
+  font-size: var(--texto-xs);
+  color: var(--aviso);
+}
+
+.hist-acciones {
+  display: flex;
+  gap: var(--esp-1);
+}
+
+.hist-vacia {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-3);
+  text-align: center;
+  color: var(--texto-secundario);
+}
+
+/* Gatito en el vacio del Historial (plan 19/11): que no quede solo texto.
+   +100% (plan 20/11): 76 -> 152 px. */
+.hist-vacia-ico {
+  width: 152px;
+  height: auto;
+}
+
+/* "Ir al inicio" (plan 19/11): recuadro y fuente mas grandes para que el
+   texto quede bien cubierto, como el resto de los botones. */
+.hist-vacia .col-boton {
+  height: auto;
+  padding: var(--esp-3) var(--esp-6);
+  font-size: var(--texto-md);
+}
+
+.hist-vacia[hidden] {
+  display: none;
+}
+
+/* --- Pantalla Cola de Descargas (porción 2: estructura + estado vacío) --- */
+.pantalla-cola {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  min-height: 0; /* la lista de abajo es la que hace scroll */
+  padding: var(--esp-3) var(--esp-6); /* igual que Historial: el título no pisa el borde */
+}
+
+.cola-cab {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+}
+
+.cola-cab .pantalla-titulo {
+  margin-right: auto; /* conteo + limpiar, a la derecha */
+}
+
+.cola-conteo {
+  font-size: var(--texto-sm);
+  color: var(--exito);          /* contador de activas en VERDE (plan archivos y cola) */
+  white-space: nowrap;
+}
+
+/* Botones globales (paso 2): a la izquierda del contador, el título empuja. */
+.cola-globales {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+}
+
+.cola-globales .col-boton {
+  padding: 0 var(--esp-3);
+}
+
+/* El tacho (borrar TODO el historial) va en ROJO, pedido explícito de Maki. */
+.cola-tacho {
+  color: var(--error-texto);
+  border-color: var(--error-texto);
+}
+
+.cola-tacho:hover {
+  background: rgba(255, 42, 42, 0.12);
+  color: var(--error-texto);
+}
+
+.cola-tacho svg {
+  width: 16px;
+  height: 16px;
+}
+
+.cola-limpiar {
+  padding: 0 var(--esp-4);
+}
+
+.cola-lista {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--esp-1) 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scroll) transparent;
+}
+
+/* Sin ítems la lista no ocupa lugar: el aviso de abajo llena y centra */
+.cola-lista:empty {
+  display: none;
+}
+
+.cola-vacia {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-3);
+  text-align: center;
+  font-size: var(--texto-md);
+  color: var(--texto-secundario);
+  margin: 0;
+  padding: 0 var(--esp-6);
+}
+
+/* Gatito en el vacio de la Cola (plan 19/11): que no quede solo texto.
+   +100% (plan 20/11): 76 -> 152 px. */
+.cola-vacia-ico {
+  width: 152px;
+  height: auto;
+}
+
+/* display:flex pisa el [hidden] del navegador: hay que ocultarlo a mano */
+.cola-vacia[hidden] {
+  display: none;
+}
+
+/* --- Ítem de la cola (porción 3: render de estados) --- */
+.cola-item {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  padding: var(--esp-2) var(--esp-3);
+  border-radius: var(--radio-tarjeta);
+}
+
+.cola-mini {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--radio-medio);
+  background: var(--fondo-campo);
+}
+
+.cola-cuerpo {
+  flex: 1;
+  min-width: 0; /* deja que el título recorte con puntos suspensivos */
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cola-titulo {
+  margin: 0;
+  font-size: var(--texto-md);
+  color: var(--texto-principal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cola-estado {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+/* Datos del archivo (peso, formato, sitio, fecha): segunda línea de la fila. */
+.cola-datos {
+  margin: 0;
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+}
+
+/* D4: ícono + color por estado. Contrastes medidos sobre el pixel real de la
+   tarjeta (peor caso 32,14,86): verde 12,3:1 · rojo texto 6,0:1 · rosa 4,84:1
+   · violeta 6,31:1 · secundario 7,62:1. Todos AA. */
+.cola-estado-ico {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+
+.cola-item[data-estado="descargando"] .cola-estado {
+  color: var(--rosa-neon);
+}
+
+.cola-item[data-estado="procesando"] .cola-estado,
+.cola-item[data-estado="pausa"] .cola-estado {
+  color: var(--color-num);
+}
+
+.cola-item[data-estado="terminada"] .cola-estado {
+  color: var(--exito);
+}
+
+.cola-item[data-estado="error"] .cola-estado,
+.cola-item[data-estado="interrumpida"] .cola-estado {
+  color: var(--error-texto);
+}
+
+.cola-item[data-estado="espera"] .cola-estado,
+.cola-item[data-estado="cancelada"] .cola-estado {
+  color: var(--texto-secundario);
+}
+
+/* --- Acciones del ítem (porción 4): botones de ícono 32 px --- */
+.cola-acciones {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--esp-1);
+}
+
+.cola-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: var(--fondo-campo);
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-pildora);
+  color: var(--texto-principal);
+  cursor: pointer;
+  transition: background var(--transicion-rapida), box-shadow var(--transicion-rapida);
+}
+
+.cola-btn:hover {
+  background: var(--nav-hover);
+  box-shadow: var(--brillo-borde);
+}
+
+.cola-btn:active {
+  background: var(--nav-press);
+}
+
+.cola-btn:focus-visible {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 2px;
+}
+
+.cola-btn:disabled {
+  opacity: var(--op-deshab);
+  box-shadow: none;
+  cursor: default;
+}
+
+.cola-ico {
+  width: 18px;
+  height: 18px;
+}
+
+/* Botones de texto de la confirmación en línea (Sí/No) */
+.cola-btn-sube {
+  width: auto;
+  padding: 0 var(--esp-3);
+  font-family: var(--fuente-interfaz);
+  font-size: var(--texto-sm);
+}
+
+.cola-confirmar {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  white-space: nowrap;
+}
+
+/* --- Progreso por ítem (porción 5): barra con degradado + datos --- */
+.cola-progreso {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.cola-barra {
+  height: 6px;
+  border-radius: var(--radio-pildora);
+  background: var(--fondo-campo);
+  overflow: hidden;
+}
+
+.cola-barra-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: var(--radio-pildora);
+  background: linear-gradient(90deg, var(--degradado-inicio), var(--degradado-fin));
+  /* El evento llega ~4 veces por segundo: la transición corta alcanza para
+     que la barra se mueva suave, sin bucle de rAF. */
+  transition: width 0.3s linear;
+}
+
+.cola-datos {
+  margin: 0;
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Movimiento reducido (preferencia del sistema o clase de la app): sin vaivén */
+@media (prefers-reduced-motion: reduce) {
+  .cola-barra-fill {
+    transition: none;
+  }
+}
+
+.reducir-efectos .cola-barra-fill {
+  transition: none;
+}
+
+/* Sin porcentaje todavía: la barra corre sola (no se sabe cuánto falta). */
+.cola-barra[data-indeterminada="si"] .cola-barra-fill {
+  width: 35%;
+  transition: none;
+  animation: cola-indeterminada 1.4s ease-in-out infinite;
+}
+
+@keyframes cola-indeterminada {
+  0% {
+    margin-left: -35%;
+  }
+
+  100% {
+    margin-left: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cola-barra[data-indeterminada="si"] .cola-barra-fill,
+  .reducir-efectos .cola-barra[data-indeterminada="si"] .cola-barra-fill {
+    animation: none;
+    margin-left: 32%;
+  }
+}
+
+/* --- Aviso al agregar a la cola (porción 6) --- */
+/* F5 P0 (8c): el aviso comparte el renglón con la ayuda (misma altura, 15px):
+   al aparecer reemplaza a la ayuda y NO empuja la tarjeta 1 (ver
+   mostrarAvisoCola/ocultarAvisoCola en app.js). */
+.aviso-cola {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  min-height: 25px; /* F5 P0 (8c): misma altura reservada que la ayuda */
+}
+
+/* display:flex pisa el [hidden] del navegador: hay que ocultarlo a mano */
+.aviso-cola[hidden] {
+  display: none;
+}
+
+.aviso-cola-ico {
+  display: inline-flex;
+  flex: none;
+  color: var(--exito);
+}
+
+.aviso-cola-ico svg {
+  width: 14px;
+  height: 14px;
+}
+
+.aviso-cola-texto {
+  font-size: var(--texto-xs);
+  color: var(--exito);
+}
+
+.aviso-cola-ver {
+  margin-left: auto;
+  padding: 4px 12px;
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-pildora);
+  background: transparent;
+  color: var(--texto-principal);
+  font: inherit;
+  font-size: var(--texto-xs);
+  cursor: pointer;
+  transition: background var(--transicion-rapida), border-color var(--transicion-rapida);
+}
+
+.aviso-cola-ver:hover {
+  background: var(--nav-hover);
+  border-color: var(--degradado-fin);
+}
+
+.aviso-cola-ver:focus-visible {
+  outline: 2px solid var(--degradado-inicio);
+  outline-offset: 2px;
+}
+
+/* Destello del contador al sumar una descarga */
+.nav-item.destello {
+  animation: destello-cola 0.6s ease-out;
+}
+
+@keyframes destello-cola {
+  0% {
+    box-shadow: 0 0 0 0 rgba(173, 31, 192, 0.55);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgba(173, 31, 192, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-item.destello {
+    animation: none;
+  }
+}
+
+.reducir-efectos .nav-item.destello {
+  animation: none;
+}
+
+/* ============================================================
+   ADAPTABILIDAD — 3 niveles + altura baja
+   ============================================================ */
+
+/* Nivel medio: 1000–1279 px — columna derecha más angosta y barra lateral
+   con texto más chico para que las 5 etiquetas entren en 124 px sin cortarse */
+@media (max-width: 1279px) {
+  :root {
+    --w-sidebar: clamp(120px, 12.4%, 152px); /* 2D.3: 12%/148 dejaba "Acerca de..." en 2 líneas a 1200 (faltaban ~4 px) */
+    --w-derecha: clamp(180px, 15%, 230px);
+    --h-encabezado: clamp(110px, 17%, 150px);
+    --fs-nav: 0.8125rem;
+    --fs-col-frase: 1.125rem; /* 24→18: a 1200 la columna mide ~150 px y el lema no entraba ni en 3 líneas */
+  }
+
+  .nav-item {
+    gap: var(--esp-2);
+    padding: 0 var(--esp-1); /* 2D.3 Parte 0: 8→4 para que "Acerca de..." entre en 1 línea a ~1184 */
+  }
+}
+
+/* Nivel compacto: <1000 px — columna derecha oculta,
+   barra lateral más angosta y etiquetas más chicas */
+@media (max-width: 999px) {
+  :root {
+    --w-sidebar: clamp(72px, 8%, 110px);
+    --w-derecha: 0px;
+  }
+
+  .columna-derecha {
+    display: none;
+  }
+
+  .app {
+    grid-template-columns: var(--w-sidebar) minmax(0, 1fr);
+    grid-template-areas:
+      "lateral  encabezado"
+      "lateral  central"
+      "inferior inferior";
+  }
+
+  /* Barra lateral compacta: solo íconos (con title en cada botón) y la
+     insignia de la Cola visible. El texto sale de la vista pero NO del
+     árbol de accesibilidad (sr-only), así el lector sigue nombrando el ítem. */
+  .nav-item {
+    width: auto;
+    justify-content: center;
+    padding: 0 var(--esp-2);
+  }
+
+  .nav-texto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Con ~46 px de ancho el lema no entra ni achicado: solo gatito */
+  .pie-lema {
+    display: none;
+  }
+
+  .pie-gatito {
+    width: 44px; /* +10% */
+  }
+}
+
+/* Barra flotante en ancho compacto (Fase 9 B6): más aire entre piezas (el
+   campo del link no queda en 3 letras) y la onda decorativa sale. Los tamaños
+   del texto y del × están en tokens.css, con la guardia de tokens. */
+@media (max-width: 999px) {
+  .barra-inferior {
+    gap: var(--esp-2);
+  }
+
+  .barra-ico {
+    display: none;
+  }
+}
+
+/* Altura media (2D.2 §6): insignia, MIAUK y miniatura más chicas para que el
+   selector de calidad quede visible sin scroll a 721 de alto */
+@media (max-height: 760px) {
+  :root {
+    --diam-num: 46px;
+    --h-btn-miauk: 70px; /* Fase 9 B5: escalón intermedio (alto 122, bajo 38) */
+    --w-mini: 168px;
+  }
+
+  /* 2D.3 Parte 0: interno de las tarjetas más apretado (8→4) para que no
+     sobren píxeles a 721 de alto (barra fantasma) ni a 618. Banner intacto.
+     3B (decisión Maki 15/10 (b)+(c)): separación entre tarjetas 12→8, margen
+     superior de .central 32→24, relleno vertical de tarjeta 12→8, interno
+     4→2 y pisos al contenido real (168/164→150/148): de 49 a 21 px de scroll
+     en la ventana por defecto. Banner y ventana intactos.
+     F4 Parte 0 (Maki 16/10, sin tocar banner ni tamaño): de 20 a 0 — separación
+     central 8→4 y pisos al contenido real de la tarjeta vacía (150/148→144/142). */
+  :root {
+    --h-card-1: 144px;
+    --h-card-2: 142px;
+  }
+
+  .central {
+    gap: var(--esp-1);
+    padding-top: var(--esp-4); /* 23/10/2026: 24→16 para que 3 fotos entre a 721 */
+  }
+
+  .tarjeta {
+    gap: 2px;
+    /* 23/10/2026: relleno vertical 6→4; con 3 fotos a 1355×721 sobraban 16 px. */
+    padding: 4px var(--esp-6);
+  }
+
+  /* Fase 9 B5: con el botón intermedio (70) la ayuda sale del flujo (sr-only)
+     para que el piso de 0 scroll a 721 se mantenga. Su texto sigue como
+     descripción del botón vía aria-describedby. */
+  .ayuda-tenue {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* Altura baja: el encabezado se compacta y las frases de la columna ceden
+   primero (las frases son decoración; el panel y las tarjetas tienen prioridad) */
+@media (max-height: 640px) {
+  :root {
+    --h-encabezado: clamp(84px, 13%, 110px);
+    --h-card-1: 140px;
+    --h-card-2: 158px;
+    --h-card-3: 140px;
+    /* 2D.3 (a)+(b): MIAUK más bajo con la misma proporción 2:1 del arte (la
+       ayuda ya sale del flujo desde el escalón de 760) */
+    --h-btn-miauk: 38px;
+  }
+
+  .col-frase {
+    display: none;
+  }
+
+  /* 2D.3 Parte 0: relleno de las tarjetas 12→10 (solo altura baja) para que
+     el selector de calidad entre en 618 sin scroll. El gap de 4 lo hereda
+     del bloque de 760. Banner intacto. 3B: 10→8, sigue el recorte (c). */
+  .tarjeta {
+    padding: var(--esp-2) var(--esp-6);
+  }
+}
+
+/* Ventana chica (decisión Maki 15/10/2026 b): separador entre tarjetas 12→8 */
+@media (max-width: 640px) {
+  .central {
+    gap: var(--esp-2);
+  }
+}
+
+/* --- Globo de ayuda propio (F5 P0 8d) --- */
+/* Lo dibuja app.js (iniciarTooltips) para botones de solo ícono (acciones de
+   la Cola) y los de "Guardar en". position:fixed + z-index alto para que no lo
+   recorte el overflow de la lista de la Cola. Solo visual (aria-hidden). */
+.globo {
+  position: fixed;
+  z-index: 40;
+  max-width: 240px;
+  padding: 6px 10px;
+  border: var(--grosor-borde) solid var(--borde-vidrio);
+  border-radius: var(--radio-medio);
+  background: var(--fondo-base);
+  color: var(--texto-principal);
+  font-family: var(--fuente-interfaz);
+  font-size: var(--texto-xs);
+  line-height: 1.3;
+  box-shadow: var(--brillo-borde);
+  pointer-events: none;
+}
+
+.globo[hidden] {
+  display: none;
+}
+
+/* Ajustes en una sola columna cuando no hay ancho para dos (F5 B3) */
+@media (max-width: 999px) {
+  .ajustes-grilla {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ============================================================
+   MOTOR DE DESCARGAS (Fase 7, A3)
+   Tarjeta de Ajustes + botón rosa fucsia neón (único lugar donde se
+   usa --rosa-neon) + aviso flotante "Motor actualizado".
+   ============================================================ */
+.motor-dato {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+.motor-dato strong {
+  color: var(--texto-principal);
+  font-weight: var(--peso-semi);
+}
+
+.motor-origen {
+  color: var(--texto-secundario);
+}
+
+.motor-ultima span:last-child {
+  color: var(--texto-principal);
+}
+
+.motor-estado {
+  margin: 0;
+  min-height: 1.2em;                 /* reserva: el mensaje no mueve el layout */
+  font-size: var(--texto-sm);
+  color: var(--texto-principal);
+}
+
+.motor-boton,
+.error-accion {
+  align-self: flex-start;
+  padding: var(--esp-2) var(--esp-4);
+  border: var(--grosor-borde) solid transparent;
+  border-radius: var(--radio-pildora);
+  font-family: var(--fuente-interfaz);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semi);
+  color: var(--tinta-sobre-neon);
+  background: var(--rosa-neon);
+  box-shadow: var(--brillo-neon);
+  cursor: pointer;
+  transition: background var(--transicion-rapida), box-shadow var(--transicion-rapida),
+    transform var(--transicion-rapida);
+}
+
+.motor-boton:hover,
+.error-accion:hover {
+  background: var(--rosa-neon-claro);
+  box-shadow: var(--brillo-neon-fuerte);
+}
+
+.motor-boton:active,
+.error-accion:active {
+  background: var(--rosa-neon-hondo);
+  box-shadow: var(--brillo-neon);
+  transform: translateY(1px);
+}
+
+.motor-boton:focus-visible,
+.error-accion:focus-visible {
+  outline: var(--anillo-foco) solid var(--texto-principal);
+  outline-offset: 2px;
+}
+
+/* Buscando…: el botón queda "ocupado" (aria-busy) pero conserva el foco y su
+   contraste; un latido suave indica que está trabajando. */
+.motor-boton[aria-busy="true"] {
+  cursor: progress;
+  box-shadow: var(--brillo-neon-fuerte);
+  animation: motor-latido 1.1s ease-in-out infinite;
+}
+
+@keyframes motor-latido {
+  50% { box-shadow: var(--brillo-neon); }
+}
+
+.reducir-efectos .motor-boton[aria-busy="true"] {
+  animation: none;
+  box-shadow: var(--brillo-neon-fuerte);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motor-boton[aria-busy="true"] {
+    animation: none;
+  }
+  .motor-boton,
+  .error-accion {
+    transition: none;
+  }
+}
+
+/* Botón de acción debajo del error del análisis (Inicio): ancho completo del
+   renglón, sin empujar nada cuando está oculto. */
+.error-accion {
+  margin-top: var(--esp-2);
+}
+
+.error-accion[hidden] {
+  display: none;
+}
+
+/* Aviso flotante "Motor actualizado": mismo componente que el aviso de la
+   cola, sin botón (es informativo y desaparece solo). */
+.aviso-motor {
+  position: fixed;
+  top: calc(12px + 60px);
+  right: calc(var(--esp-4) + 8px);
+  z-index: var(--z-barra);
+  padding: var(--esp-2) var(--esp-3);
+  max-width: min(420px, calc(100vw - var(--w-sidebar) - 72px));
+}
+
+.aviso-motor[hidden] {
+  display: none;
+}
+
+/* Cartel suave si la app se traba (tanda 20/11/2026, paso 2): mismo vidrio
+   que el aviso del motor, abajo al centro, con Refrescar y Seguir esperando. */
+.aviso-traba {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--esp-6) + 64px);
+  transform: translateX(-50%);
+  z-index: var(--z-barra);
+  flex-wrap: wrap;
+  padding: var(--esp-3) var(--esp-4);
+  max-width: min(520px, calc(100vw - 48px));
+}
+
+.aviso-traba[hidden] {
+  display: none;
+}
+
+.aviso-traba .aviso-cola-texto {
+  flex: 1 1 240px;
+  color: var(--texto-principal);
+  font-size: var(--texto-sm);
+}
+
+.aviso-traba-botones {
+  display: flex;
+  gap: var(--esp-2);
+  margin-left: auto;
+}
+
+.aviso-traba .aviso-cola-ver {
+  margin-left: 0;
+}
+
+/* ---------- RECORRIDO GUIADO (Fase 7, C) ----------
+   Anillo que rodea el elemento señalado (nunca lo tapa: el sombreado sale
+   hacia afuera) y cartel de vidrio que se ubica al lado, sin superponerse. */
+.recorrido[hidden],
+.recorrido-foco[hidden] {
+  display: none;
+}
+
+.recorrido-foco {
+  position: fixed;
+  z-index: var(--z-recorrido-foco);
+  border-radius: var(--radio-medio);
+  box-shadow: 0 0 0 3px var(--rosa-neon),
+              0 0 0 9999px rgba(5, 2, 18, 0.55);
+  pointer-events: none;
+  transition: top 160ms ease, left 160ms ease, width 160ms ease,
+              height 160ms ease;
+}
+
+.recorrido-caja {
+  position: fixed;
+  z-index: var(--z-recorrido);
+  width: min(360px, calc(100vw - 32px));
+  padding: var(--esp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  background: var(--superficie-vidrio);
+}
+
+.recorrido-indicador {
+  margin: 0;
+  font-size: var(--texto-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--texto-secundario);
+}
+
+.recorrido-titulo {
+  margin: 0;
+  font-size: var(--texto-lg);
+  color: var(--texto-principal);
+}
+
+.recorrido-texto {
+  margin: 0;
+  color: var(--texto-secundario);
+}
+
+.recorrido-botones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-2);
+}
+
+.recorrido-espacio {
+  flex: 1 1 auto;
+}
+
+.recorrido-saltar {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--texto-secundario);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.recorrido-saltar:hover,
+.recorrido-saltar:focus-visible {
+  color: var(--texto-principal);
+}
+
+.recorrido-siguiente {
+  border-color: var(--rosa-neon);
+}
+
+.reducir-efectos .recorrido-foco {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recorrido-foco {
+    transition: none;
+  }
+}
+
+@media (max-width: 1200px) {
+  .recorrido-caja {
+    width: min(320px, calc(100vw - 24px));
+  }
+}
+
+/* --- Pantalla Lista de reproducción (plan de playlists) --- */
+.pantalla-playlist {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  min-height: 0;
+  padding: var(--esp-3) var(--esp-6);
+}
+
+.pl-cab {
+  display: flex;
+  align-items: baseline;
+  gap: var(--esp-3);
+}
+
+.pl-cab .pantalla-titulo {
+  margin-right: auto;
+}
+
+.pl-conteo {
+  /* Tanda 20/11/2026, paso 4: Maki lo pidió al doble. El color es el
+     mismo verde neón de éxito (--exito), con la misma fuente y tamaño. */
+  font-size: calc(var(--texto-sm) * 2);
+  color: var(--exito);
+  white-space: nowrap;
+}
+
+.pl-titulo {
+  margin: 0;
+  font-size: var(--texto-md);
+  color: var(--rosa-neon);
+  text-shadow: 0 0 6px rgba(255, 47, 149, 0.55), 0 0 14px rgba(255, 47, 149, 0.28);
+  word-break: break-word;
+}
+
+.pl-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-3);
+  margin-bottom: calc(-1 * var(--esp-2));
+}
+
+/* La barra de calidades no necesita todo el ancho (la opción más larga es
+   "1080p · Full HD"): se acorta y el botón MIAUK! queda a su derecha. */
+.pl-acciones .ajuste-select {
+  width: min(300px, 52%);
+  flex: 0 1 auto;
+}
+
+.pl-todo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-2);
+  font-size: var(--texto-md);
+  color: var(--texto-principal);
+  cursor: pointer;
+}
+
+.pl-todo input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--rosa-neon);
+  cursor: pointer;
+}
+
+.pl-miauk {
+  margin-left: auto;
+}
+
+.pl-miauk img {
+  width: 236px;
+  height: auto;
+}
+
+/* Tanda 20/11/2026, paso 4: en ventanas chicas el botón y el contador bajan
+   la escala para no comerse la lista (en la normal van al doble). */
+@media (max-height: 760px) {
+  .pl-miauk img {
+    width: 177px;
+  }
+
+  .pl-conteo {
+    font-size: calc(var(--texto-sm) * 1.5);
+  }
+}
+
+@media (max-height: 640px), (max-width: 640px) {
+  .pl-miauk img {
+    width: 148px;
+  }
+
+  .pl-conteo {
+    font-size: calc(var(--texto-sm) * 1.25);
+  }
+}
+
+.pl-lista {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--esp-1) 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scroll) transparent;
+}
+
+.pl-lista:empty {
+  display: none;
+}
+
+.pl-item {
+  flex: none;
+}
+
+.pl-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  padding: var(--esp-2) var(--esp-3);
+  border-radius: var(--radio-tarjeta);
+  cursor: pointer;
+}
+
+.pl-fila:hover {
+  background: var(--fondo-campo);
+}
+
+.pl-fila input[type="checkbox"] {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--rosa-neon);
+  cursor: pointer;
+}
+
+.pl-mini {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--radio-medio);
+  background: var(--fondo-campo);
+}
+
+.pl-cuerpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pl-vtitulo {
+  font-size: var(--texto-md);
+  color: var(--texto-principal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pl-vdur {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+.pl-salteados {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+.cola-resumen {
+  flex: none;
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  padding: 0 var(--esp-1);
+}
+
+.cola-resumen[hidden] {
+  display: none;
+}

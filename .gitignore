@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Pruebas
+.pytest_cache/
+
+# Empaquetado (generado por tools/)
+build/
+dist/
+*.spec
+
+# Datos y logs locales
+*.log
+reg-miau/
+
+# Sistema
+Thumbs.db
+
+# Binarios grandes: fuera del repo (origen y SHA-256 en docs/DEPENDENCIAS.md)
+miauki/bin/*.exe
+
+# Evidencia de pruebas (capturas y volcados pesados): NO van al repo.
+# Solo se versionan las comparaciones clave y livianas de docs/referencia/.
+docs/evidencia/
