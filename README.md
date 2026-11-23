@@ -42,8 +42,8 @@ Paste a link, press **Analyze**, and Miauki shows you the video, song, photo or 
 - **Friendly interface** in English and Spanish (switch in Settings).
 - **Simple by design**: one field, one button, clear results. No technical knowledge needed.
 - **Download queue** with pause / resume / cancel.
-- **Cookies**: `.txt` (Netscape) and `.json` files, or pick a browser (Chrome, Edge, Firefox, Brave, Chromium, Opera, Vivaldi) for content that needs a login.
-- **Qualities**: video up to 4K/8K, music 320, original image (depending on the site).
+- **Cookies**: `.txt` (Netscape) and `.json` files, or pick a browser (Chrome, Edge, Firefox, Brave, Chromium, Opera, Vivaldi) for content that needs a login. To export them, these are the 3 most common browser extensions: **Get cookies.txt LOCALLY** (Chrome/Edge/Brave), **Cookie-Editor** (Chrome/Edge/Firefox), and **cookies.txt** (Firefox).
+- **Qualities**: video up to 4K/8K, music 320 Kbps, original image (depending on the site).
 - **Privacy**: no telemetry. Everything stays on your PC.
 - Initial window 1420×840, resizable.
 
